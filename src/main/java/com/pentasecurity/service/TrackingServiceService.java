@@ -34,9 +34,14 @@ public class TrackingServiceService {
 	public List<History> searchForDataid(String dataId) {
 		//List<String> ret = new ArrayList<>();
 		List<History> ret = historyRepository.findByDataId(dataId);
-		tree(ret);
+		tree(ret, getMasterTable(dataId));
 		
 		return ret;
+	}
+	
+	public String getTree(String dataId) {
+		List<History> ret = historyRepository.findByDataId(dataId);
+		return tree(ret, getMasterTable(dataId));
 	}
 	
 	public List<History> searchAll() {
@@ -80,7 +85,7 @@ public class TrackingServiceService {
         }
     }
 	
-	private String tree(List<History> history) {
+	private String tree(List<History> history, MasterDto masterDto) {
 		String ret ="";
 		
 		History start;
@@ -106,27 +111,39 @@ public class TrackingServiceService {
 		
 		Set<String> visited = new HashSet<>();
 		
-		
-		
 		for(String member: memberList) {
 			JSONObject node = new JSONObject();
 			JSONArray child = new JSONArray();
 			
-			node.put("name", member);
+			node.put("deviceid", member);
+			
 			
 			treeNode.put(member, node);
 			treeArray.put(member, child);
 			
 		}
 		
+		JSONObject firstObj = treeNode.get(firstNode.getFromId());
 		
+		firstObj.put("timestamp", masterDto.getCreateTime());
+		firstObj.put("actiontype", "create");
+		//firstObj.put("devicetype", "device");
+		//firstObj.put("devicetype", );
 		for(History path: history) {
 			String startName = path.getFromId();
 			String endName = path.getToId();
+			
 			JSONObject nodeObject = treeNode.get(startName);
 			JSONObject edgeObject = treeNode.get(endName);
 			JSONArray nodeArray = treeArray.get(startName);
 			
+			if(!nodeObject.containsKey("devicetype"))
+				nodeObject.put("devicetype", path.getFromType());
+			
+			edgeObject.put("timestamp", path.getReceivedTime());
+			edgeObject.put("actiontype", path.getTrace());
+			edgeObject.put("devicetype", path.getToType());
+		
 			nodeArray.add(edgeObject);
 			nodeObject.put("children", nodeArray);
 		}

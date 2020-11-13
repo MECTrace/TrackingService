@@ -46,7 +46,10 @@ public class TrackingServiceController {
 		return ret;
 
 	}
-	
+	/*
+	@GetMapping("/condition/search")
+	private Map<String, Object> conditionalSearch()
+	*/
 	@PostMapping("/upload")
 	private Map<String, Object> uploadFile(@RequestParam("file") MultipartFile multipartFile) {
 		Map<String, Object> ret = new HashMap<>();
@@ -70,7 +73,7 @@ public class TrackingServiceController {
 				ret.put("timestamp", masterDto.getCreateTime());
 				ret.put("dataFormat", masterDto.getDataFormat());
 				ret.put("deviceId", masterDto.getSourceId());
-				
+				ret.put("tracking", trackingServiceService.getTree(dataId));
 				
 			}
 			

@@ -1,5 +1,7 @@
 
 var gPageNo = 1;
+
+var treeData;
 function loadDoc(registStatus) {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
@@ -70,6 +72,9 @@ function fileDetail(data) {
 	dataFormat.innerHTML = data["dataFormat"];
 	deviceId.innerHTML = data["deviceId"];
 	
+	treeData = JSON.parse(data["tracking"]);
+	
+	tracking();
 	
 	
 }
@@ -86,9 +91,6 @@ function upload() {
 		}
 	};
 	
-	
-	
-
 	xhttp.open("POST", loadUri + "/upload");
 	fd.append('file', selectedFile);
 	

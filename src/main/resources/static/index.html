@@ -3,9 +3,56 @@
 <head>
 <meta charset="utf-8">
 <link rel="stylesheet" href="css/basic.css" type="text/css">
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="js/dndTree.js"></script>
 <script type="text/javascript" src="js/url.js"></script>
 <script type="text/javascript" src="js/basic.js"></script>
+
+<style type="text/css">
+  
+	.node {
+    cursor: pointer;
+  }
+
+  .overlay{
+      background-color:#EEE;
+  }
+   
+  .node rect {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+  }
+   
+  .node text {
+    font-size:10px; 
+    font-family:sans-serif;
+  }
+   
+  .link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+  }
+
+  .templink {
+    fill: none;
+    stroke: red;
+    stroke-width: 3px;
+  }
+
+  .ghostCircle.show{
+      display:block;
+  }
+
+  .ghostCircle, .activeDrag .ghostCircle{
+       display: none;
+  }
+
+</style>
+
+
 <title>Tracking Management Service</title>
 </head>
 <body>
@@ -18,10 +65,15 @@
 		<nav class="sidebar">
 			<ul class="sidebar-nav-container" id="sidebar-nav-container">
 				<li class="sidebar-nav-menu">Data Tracking</li>
-				<li class="sidebar-nav-item" id="index"><a href="index.html">Data
-						Hash Based</a></li>
-				<li class="sidebar-nav-item" id="search"><a href="search.html">맞춤
-						검색</a></li>
+				<li class="sidebar-nav-item" id="index"><a href="index.html">Data ID Based</a></li>
+				<li class="sidebar-nav-item" id="search"><a href="search.html">맞춤 검색</a></li>
+				<li class="sidebar-nav-item" id="analysis"><a href="#">Data Analysis</a></li>
+			</ul>
+			<ul class="sidebar-nav-container" id="sidebar-nav-container">
+				<li class="sidebar-nav-menu">Edge Node Management</li>
+				<li class="sidebar-nav-item" id="cpu"><a href="#">CPU Usage</a></li>
+				<li class="sidebar-nav-item" id="storage"><a href="#">Data Storage</a></li>
+				<li class="sidebar-nav-item" id="traffic"><a href="#">Network Traffic</a></li>
 			</ul>
 		</nav>
 
@@ -89,21 +141,17 @@
 						<td>Available Policy</td>
 						<td>P1</td>
 					</tr>
-					<tr>
-						<td colspan="3"><svg></svg></td>
-					</tr>
-					<tr>
-						<td colspan="3" style="text-align:center">
-						<button type="button">Tracking</button></td>
-					</tr>
+					
 				</table>
 			</form>
 
-			<nav class="nav-container">
-				<ul id="pageNum">
+						<div id="tree-container">
+						
+						
+						</div>
 
-				</ul>
-			</nav>
+						<button type="button">Tracking</button></td>
+			
 
 		</div>
 	</main>
