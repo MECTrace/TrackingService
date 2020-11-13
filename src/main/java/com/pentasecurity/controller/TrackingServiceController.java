@@ -1,14 +1,19 @@
 package com.pentasecurity.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.pentasecurity.dto.MasterDto;
 import com.pentasecurity.entity.History;
 import com.pentasecurity.service.TrackingServiceService;
 
@@ -40,6 +45,44 @@ public class TrackingServiceController {
 
 		return ret;
 
+	}
+	
+	@PostMapping("/upload")
+	private Map<String, Object> uploadFile(@RequestParam("file") MultipartFile multipartFile) {
+		Map<String, Object> ret = new HashMap<>();
+		
+		try {
+			byte[] bytes = multipartFile.getBytes();
+			
+			String contents = new String(bytes);
+			System.out.println(contents);
+			
+			String dataId = trackingServiceService.encryption(contents);
+			
+			MasterDto masterDto = trackingServiceService.getMasterTable(dataId);
+			ret.put("dataId", dataId);
+			ret.put("metaData", contents);
+			
+			
+			
+			if(masterDto != null) {
+				
+				ret.put("timestamp", masterDto.getCreateTime());
+				ret.put("dataFormat", masterDto.getDataFormat());
+				ret.put("deviceId", masterDto.getSourceId());
+				
+				
+			}
+			
+			
+			
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return ret;
 	}
 
 }

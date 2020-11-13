@@ -3,7 +3,10 @@ package com.pentasecurity.entity;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import lombok.Getter;
+
 @Entity
+@Getter
 public class Master {
 	
 	@Id

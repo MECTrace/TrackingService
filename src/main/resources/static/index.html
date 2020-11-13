@@ -28,39 +28,39 @@
 
 		<div id="ps-content">
 			<div class="headline">Tracking Management Service</div>
-			<form>
+			<form >
 				<table style="border: 1px solid black; margin-top:10px">
 					<tr>
 						<td>Data ID:</td>
-						<td><input type="text"></input></td>
-						<td><button type="button">첨부하기</button></td>
+						<td><input type="text" id="dataIdText"></input></td>
+						<td><input type="file" name="file" value="첨부하기" id="uploadFile" onChange="upload()" /></td>
 						<td><button type="button">전송</button></td>
 					</tr>
 
 					<tr>
-						<td colspan="4" style="text-align: left">MetaData(0x..)</td>
+						<td colspan="4" style="text-align: left" id="metaData">MetaData(0x..)</td>
 
 					</tr>
 				</table>
 				<table style="border:1px solid black; border-collapse:collapse">
 					<tr>
 						<td rowspan="3">Data Info.</td>
-						<td>Data ID</td>
-						<td>0x3d9d...</td>
+						<td >Data ID</td>
+						<td id="dataId">0x3d9d...</td>
 					</tr>
 					<tr>
 						<td>timestamp</td>
-						<td>201022175335</td>
+						<td id="timestamp">201022175335</td>
 					</tr>
 					<tr>
 						<td>Data Format</td>
-						<td>NTCIP 1202</td>
+						<td id="dataFormat">NTCIP 1202</td>
 					</tr>
 
 					<tr>
 						<td rowspan="4">Source Info.</td>
 						<td>Device ID</td>
-						<td>0xc093c...</td>
+						<td id="deviceId">0xc093c...</td>
 					</tr>
 					<tr>
 						<td>Device Model</td>
