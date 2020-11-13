@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>스마트키</title>
+
+<script type="text/javascript" src="js/url.js"></script>
+<script type="text/javascript">
+	var regnumber;
+	function loadDoc(registStatus) {
+		clearAll();
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var response = JSON.parse(this.responseText);
+				if (response.code != 0)
+					return;
+
+				document.getElementById("regnumber").innerHTML = response.result.regnumber;
+				document.getElementById("regdate").innerHTML = dateToStringDetail(response.result.regdateDetail);
+				document.getElementById("download").innerHTML = dateToStringDetail(response.result.downloadDetail);
+				document.getElementById("name").innerHTML = response.result.name;
+				document.getElementById("licenseno").innerHTML = response.result.licenseno;
+				document.getElementById("rental-date").innerHTML = dateToString(response.result.rentaldate)
+						+ ' ~ ' + dateToString(response.result.returndate);
+				document.getElementById("car-name").innerHTML = response.result.carName;
+				document.getElementById("car-number").innerHTML = response.result.carNumber;
+				document.getElementById("car-year").innerHTML = response.result.carYear;
+				document.getElementById("car-clazz").innerHTML = response.result.carClazz;
+				document.getElementById("car-oil").innerHTML = response.result.carOil;
+
+				document.getElementById("car-clazz2").innerHTML = response.result.carClazz2;
+
+				document.getElementById("photo").innerHTML = "<img  src='/img/"
+						+ String(response.result.carName)
+						+ ".png'  width=200px/>";
+
+				if (response.result.download == 0) {
+					document.getElementById("credential-visible").style.display = "none";
+				} else {
+					document.getElementById("credential-visible").style.display = "block";
+				}
+
+				if (response.result.status == 'Disposal'
+						|| response.result.status == 'Reject') {
+					document.getElementById("item-image").innerHTML = "<img src='image/reject-big.png' width=80%/>"
+				}
+
+			}
+		};
+
+		regnumber = opener.document.getElementById("detail-regnumber").value;
+
+		xhttp.open("GET", detailUri + regnumber);
+
+		xhttp.send();
+	}
+
+	function clearAll() {
+		clearById("regnumber");
+		clearById("regdate");
+		clearById("licenseno");
+		clearById("name");
+		clearById("rental-date");
+		clearById("car-year");
+		clearById("car-name");
+		clearById("car-number");
+		clearById("car-clazz");
+		clearById("car-oil");
+		clearById("car-clazz2");
+
+	}
+	function clearById(id) {
+		document.getElementById(id).innerHTML = "";
+
+	}
+
+	function dateToString(date) {
+
+		var year = parseInt(date / 10000);
+		var tmp = date % 10000;
+		var month = parseInt(tmp / 100);
+		var days = tmp % 100;
+		if (month < 10)
+			month = "0" + month;
+		if (days < 10)
+			days = "0" + days;
+
+		return year + "." + month + "." + days + ".";
+
+	}
+
+	function getCredential() {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var response = JSON.parse(this.responseText);
+				if (response.code != 0)
+					return;
+
+				document.getElementById("credential").innerHTML = '<pre> <code>'
+						+ JSON.stringify(JSON.parse(response.result), null, 2)
+								.replace(/\\/g, "") + '</code></pre>';
+
+			}
+		};
+
+		xhttp.open("GET", detailUri + regnumber + '/download');
+
+		xhttp.send();
+
+	}
+	
+	function dateToStringDetail(mills){ 
+		if(mills == 0)
+			return "";
+		var date = new Date(mills);
+		
+		
+		return  date.customFormat("#YYYY#.#MM#.#DD# #hhhh#:#mm#");
+		
+	}
+
+	Date.prototype.customFormat = function(formatString){
+		  var YYYY,YY,MMMM,MMM,MM,M,DDDD,DDD,DD,D,hhhh,hhh,hh,h,mm,m,ss,s,ampm,AMPM,dMod,th;
+		  YY = ((YYYY=this.getFullYear())+"").slice(-2);
+		  MM = (M=this.getMonth()+1)<10?('0'+M):M;
+		  MMM = (MMMM=["January","February","March","April","May","June","July","August","September","October","November","December"][M-1]).substring(0,3);
+		  DD = (D=this.getDate())<10?('0'+D):D;
+		  DDD = (DDDD=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][this.getDay()]).substring(0,3);
+		  th=(D>=10&&D<=20)?'th':((dMod=D%10)==1)?'st':(dMod==2)?'nd':(dMod==3)?'rd':'th';
+		  formatString = formatString.replace("#YYYY#",YYYY).replace("#YY#",YY).replace("#MMMM#",MMMM).replace("#MMM#",MMM).replace("#MM#",MM).replace("#M#",M).replace("#DDDD#",DDDD).replace("#DDD#",DDD).replace("#DD#",DD).replace("#D#",D).replace("#th#",th);
+		  h=(hhh=this.getHours());
+		  if (h==0) h=24;
+		  if (h>12) h-=12;
+		  hh = h<10?('0'+h):h;
+		  hhhh = hhh<10?('0'+hhh):hhh;
+		  AMPM=(ampm=hhh<12?'am':'pm').toUpperCase();
+		  mm=(m=this.getMinutes())<10?('0'+m):m;
+		  ss=(s=this.getSeconds())<10?('0'+s):s;
+		  return formatString.replace("#hhhh#",hhhh).replace("#hhh#",hhh).replace("#hh#",hh).replace("#h#",h).replace("#mm#",mm).replace("#m#",m).replace("#ss#",ss).replace("#s#",s).replace("#ampm#",ampm).replace("#AMPM#",AMPM);
+		};
+</script>
+
+<style>
+.main-font {
+	font-family: 돋움;
+	padding: auto;
+}
+
+.font-bold {
+	font-weight: bolder;
+	font-size: 27px;
+}
+
+.font-small {
+	font-size: 12px;
+}
+
+.font-normal {
+	font-weight: lighter;
+	font-size: 14px;
+}
+
+.font-name {
+	font-weight: bolder;
+	font-size: 16px;
+}
+
+.dateofissue {
+	vertical-align: bottom;
+	font-size: 12px;
+}
+
+.font-issuer {
+	font-weight: bolder;
+	font-size: 27px;
+}
+
+.justyfy-font {
+	text-align: justify center;
+}
+
+.justyfy-font:after {
+	content: " ";
+	display: inline-block;
+	width: 100%;
+}
+
+.radius-table {
+	border: 2px solid;
+	border-radius: 10px;
+}
+
+.test-date {
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+.table-attr {
+	min-width: 100px;
+}
+
+td {
+	padding: 10px;
+}
+
+.item-wrapper {
+	position: relative;
+}
+
+.item-image {
+	
+	width: 100%;
+}
+
+.item-image img {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	vertical-align: middle;
+}
+</style>
+    
+
+</head>   
+<body onload="loadDoc('')" >
+
+	<div>
+		<div class="item-wrapper">
+			<table class="main-font radius-table">
+
+				<tr>
+					<td>접수번호</td>
+
+					<td id="regnumber" colspan=3 width="370px">6f4fafd1-d4f8-4f49-a65e-2e95ee6710ad</td>
+
+				</tr>
+				<tr>
+					<td>접수일자</td>
+					<td id="regdate" colspan=3 width="80px">2020.09.16.</td>
+				</tr>
+				
+				<tr>
+					<td>발급일자</td>
+					<td id="download" colspan=3 width="80px">2020.09.16.</td>
+				</tr>
+
+				<tr>
+					<td>사용자이름</td>
+					<td id="name" colspan=3 class="font-name">고길동</td>
+				</tr>
+
+				<tr>
+					<td>운전면허번호</td>
+					<td id="licenseno" colspan=3 class="font-bold" width="300px">00-00-000000-00</td>
+				</tr>
+
+				<tr>
+					<td colspan=1>렌탈 기간</td>
+					<td id="rental-date" colspan=3>2020.09.08. ~ 2020.09.15.</td>
+
+				</tr>
+
+				<tr>
+					<td colspan=4></td>
+
+				</tr>
+
+
+
+				<tr>
+					<td rowspan=6><img src="icons/key.png" height=200px width=100 /></td>
+
+					<td style="min-width: 70px">차종</td>
+					<td id="car-name">컨트리맨</td>
+					<td id="photo" colspan=2 rowspan=6 width="180px"></td>
+				</tr>
+
+				<tr>
+					<td>차번호</td>
+					<td id="car-number" class="table-attr">123타 4567</td>
+				</tr>
+
+				<tr>
+					<td>연식</td>
+					<td id="car-year">2020</td>
+				</tr>
+
+
+				<tr>
+					<td>등급</td>
+					<td id="car-clazz">소형 suv</td>
+				</tr>
+
+				<tr>
+					<td>연료</td>
+					<td id="car-oil">휘발류</td>
+				</tr>
+
+				<tr>
+					<td>변속기</td>
+					<td id="car-clazz2">오토</td>
+				</tr>
+
+			</table>
+
+			<div class="item-image" id="item-image"></div>
+		</div>
+		<p></p>
+		<div id="credential-visible" align="left">
+			<details>
+				<summary onclick='getCredential()'>vc 펼쳐보기</summary>
+
+				<p id="credential"></p>
+
+			</details>
+		</div>
+	</div>
+
+</body>
+</html>
