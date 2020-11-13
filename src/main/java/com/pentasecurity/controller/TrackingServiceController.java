@@ -34,8 +34,8 @@ public class TrackingServiceController {
 	private Map<String, Object> searchForDataId(@PathVariable String dataId) {
 		Map<String, Object> ret = new HashMap<>();
 		
-		//ret.put("result", trackingServiceService.searchForDataid(dataId));
-		List<History> temp = trackingServiceService.searchAll();
+		List<History> temp = trackingServiceService.searchForDataid(dataId);
+		//List<History> temp = trackingServiceService.searchAll();
 		ret.put("result", temp);
 
 		return ret;
