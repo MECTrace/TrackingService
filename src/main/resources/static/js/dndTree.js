@@ -50,8 +50,11 @@ function tracking() {
     var root;
 
     // size of the diagram
-    var viewerWidth = $(document).width();
-    var viewerHeight = $(document).height();
+    var viewerWidth = $("#tree-div").width();
+    var viewerHeight = $("#tree-div").height();
+    
+    //var viewerWidth = $(document).width();
+    //var viewerHeight = $(document).height();
 
     var tree = d3.layout.tree()
         .size([viewerHeight, viewerWidth]);
