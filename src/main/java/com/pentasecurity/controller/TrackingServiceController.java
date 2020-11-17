@@ -31,7 +31,7 @@ public class TrackingServiceController {
 	private Map<String, Object> index() {
 
 		Map<String, Object> ret = new HashMap<>();
-
+		trackingServiceService.test();
 		return ret;
 	}
 
@@ -53,7 +53,7 @@ public class TrackingServiceController {
 	@PostMapping("/upload")
 	private Map<String, Object> uploadFile(@RequestParam("file") MultipartFile multipartFile) {
 		Map<String, Object> ret = new HashMap<>();
-		
+		trackingServiceService.test();
 		try {
 			byte[] bytes = multipartFile.getBytes();
 			

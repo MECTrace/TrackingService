@@ -18,9 +18,5 @@ public class ConditionSearchDto {
 	public ConditionSearchDto() {
 		
 	}
-	
-	
-	
-	
 
 }
