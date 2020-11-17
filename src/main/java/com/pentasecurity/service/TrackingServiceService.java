@@ -10,10 +10,13 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import javax.persistence.Tuple;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
+import com.pentasecurity.dto.ConditionSearchDto;
 import com.pentasecurity.dto.MasterDto;
 import com.pentasecurity.entity.History;
 import com.pentasecurity.entity.Master;
@@ -69,6 +72,40 @@ public class TrackingServiceService {
 			masterDto = new MasterDto(master);
 		}
 		return masterDto;
+	}
+	
+	public String test() {
+		String ret = "";
+		ConditionSearchDto c = new ConditionSearchDto();
+		
+		c.setTimeStampStart("2020-11-12 19:00:00");
+		c.setTimeStampEnd("2020-11-13 19:00:00");
+		//c.setDeviceId("device-1");
+		c.setEdgeId("edge-4");
+		c.setDataFormat("JSON");
+		/*
+		List<Tuple> history = historyRepository.findByConditional(c);
+		
+		for(Tuple t : history) {
+			History h = t.get("history", History.class);
+			Master m = t.get("master", Master.class);
+			
+			System.out.println(h);
+			System.out.println(m);
+			System.out.println("===============================================================================");
+			
+			
+		}*/
+		
+		List<History> history = historyRepository.findByConditional(c);
+		
+		for(History h: history) {
+			System.out.println(h);
+		}
+		
+				
+		
+		return ret;	
 	}
 	
 	private String encrypt(String s, String messageDigest) {
