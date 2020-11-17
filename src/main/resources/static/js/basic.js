@@ -2,6 +2,8 @@
 var gPageNo = 1;
 
 var treeData;
+
+var jsonData;
 function loadDoc(registStatus) {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
@@ -73,12 +75,12 @@ function fileDetail(data) {
 	deviceId.innerHTML = data["deviceId"];
 	
 	treeData = JSON.parse(data["tracking"]);
-	
-	tracking();
+	jsonData = JSON.parse(data["tracking"]);
+	viewTree();
+	force();
 	
 	
 }
-
 
 function upload() {
 	var xhttp = new XMLHttpRequest();
@@ -88,9 +90,11 @@ function upload() {
 		if (this.readyState == 4 && this.status == 200) {
 			var response = JSON.parse(this.responseText);
 			fileDetail(response);
+			document.getElementById("data-info").style.display="block";
+			document.getElementById("tree-div").style.display="block";
 		}
 	};
-	
+	 
 	xhttp.open("POST", loadUri + "/upload");
 	fd.append('file', selectedFile);
 	

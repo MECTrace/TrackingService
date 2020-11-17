@@ -1,60 +1,62 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8">
-<link rel="stylesheet" href="css/basic.css" type="text/css">
-<script src="https://d3js.org/d3.v3.min.js"></script>
-<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script type="text/javascript" src="js/dndTree.js"></script>
-<script type="text/javascript" src="js/url.js"></script>
-<script type="text/javascript" src="js/basic.js"></script>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="css/basic.css" type="text/css">
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="js/dndTree.js"></script>
+	<script type="text/javascript" src="js/force.js"></script>
+	<script type="text/javascript" src="js/url.js"></script>
+	<script type="text/javascript" src="js/basic.js"></script>
 
-<style type="text/css">
-  
-	.node {
-    cursor: pointer;
-  }
+	<style type="text/css">
+		.node {
+			cursor: pointer;
+		}
 
-  .overlay{
-      background-color:#EEE;
-  }
-   
-  .node rect {
-    fill: #fff;
-    stroke: steelblue;
-    stroke-width: 1.5px;
-  }
-   
-  .node text {
-    font-size:10px; 
-    font-family:sans-serif;
-  }
-   
-  .link {
-    fill: none;
-    stroke: #ccc;
-    stroke-width: 1.5px;
-  }
+		.overlay {
+			background-color: #FFFFFF;
+		}
 
-  .templink {
-    fill: none;
-    stroke: red;
-    stroke-width: 3px;
-  }
+		.node rect {
+			fill: #fff;
+			stroke: steelblue;
+			stroke-width: 1.5px;
+		}
 
-  .ghostCircle.show{
-      display:block;
-  }
+		.node text {
+			font-size: 10px;
+			font-family: sans-serif;
+		}
 
-  .ghostCircle, .activeDrag .ghostCircle{
-       display: none;
-  }
+		.link {
+			fill: none;
+			stroke: red;
+			stroke-width: 1.5px;
+		}
 
-</style>
+		.templink {
+			fill: none;
+			stroke: red;
+			stroke-width: 3px;
+		}
+
+		.ghostCircle.show {
+			display: block;
+		}
+
+		.ghostCircle,
+		.activeDrag .ghostCircle {
+			display: none;
+		}
+	</style>
 
 
-<title>Tracking Management Service</title>
+	<title>Tracking Management Service</title>
 </head>
+
 <body>
 	<input type="hidden" id="parentRegnumber" />
 
@@ -76,12 +78,11 @@
 				<li class="sidebar-nav-item" id="traffic"><a href="#">Network Traffic</a></li>
 			</ul>
 		</nav>
-
-
+		
 		<div id="ps-content">
-			<div class="headline">Tracking Management Service</div>
-			<form >
-				<table style="border: 1px solid black; margin-top:10px">
+			<div class="headline">Data ID Based Search</div>
+			<form>
+				<table class="user-data-table" style="width:900px; border: 1px solid black; margin-top:10px">
 					<tr>
 						<td>Data ID:</td>
 						<td><input type="text" id="dataIdText"></input></td>
@@ -93,65 +94,78 @@
 						<td colspan="4" style="text-align: left" id="metaData">MetaData(0x..)</td>
 
 					</tr>
-				</table>
-				<table style="border:1px solid black; border-collapse:collapse">
-					<tr>
-						<td rowspan="3">Data Info.</td>
-						<td >Data ID</td>
-						<td id="dataId">0x3d9d...</td>
-					</tr>
-					<tr>
-						<td>timestamp</td>
-						<td id="timestamp">201022175335</td>
-					</tr>
-					<tr>
-						<td>Data Format</td>
-						<td id="dataFormat">NTCIP 1202</td>
-					</tr>
-
-					<tr>
-						<td rowspan="4">Source Info.</td>
-						<td>Device ID</td>
-						<td id="deviceId">0xc093c...</td>
-					</tr>
-					<tr>
-						<td>Device Model</td>
-						<td>RSU-v1.23</td>
-					</tr>
-					<tr>
-						<td>Location</td>
-						<td>Static Location-1번 국도 37 전신주</td>
-					</tr>
-
-					<tr>
-						<td>Organization</td>
-						<td>KST 모빌리티</td>
-					</tr>
-
-					<tr>
-						<td rowspan="3">Distribution Info.</td>
-						<td>Security Level</td>
-						<td>S1</td>
-					</tr>
-					<tr>
-						<td>Frequency</td>
-						<td>F3</td>
-					</tr>
-					<tr>
-						<td>Available Policy</td>
-						<td>P1</td>
-					</tr>
-					
-				</table>
+				</table> 
 			</form>
-				<div id="tree-div" style="width:1000px;height:300px">
-					<div id="tree-container">
-					
-					</div>
-				</div>
+			<table id="data-info" class="data-info" style="margin:10px 0px 10px 0px; width:900px;  border-collapse:collapse; display:none;">
+				<tr>
+					<td rowspan="3" class="data-info-header">Data Info.</td>
+					<td>Data ID</td>
+					<td id="dataId">0x3d9d...</td>
+				</tr>
+				<tr>
+					<td>timestamp</td>
+					<td id="timestamp">201022175335</td>
+				</tr>
+				<tr>
+					<td>Data Format</td>
+					<td id="dataFormat">NTCIP 1202</td>
+				</tr>
 
-				<button type="button">Tracking</button></td>
-	
+				<tr>
+					<td rowspan="4" class="data-info-header">Source Info.</td>
+					<td>Device ID</td>
+					<td id="deviceId">0xc093c...</td>
+				</tr>
+				<tr>
+					<td>Device Model</td>
+					<td>RSU-v1.23</td>
+				</tr>
+				<tr>
+					<td>Location</td>
+					<td>Static Location-1번 국도 37 전신주</td>
+				</tr>
+
+				<tr>
+					<td>Organization</td>
+					<td>KST 모빌리티</td>
+				</tr>
+
+				<tr>
+					<td rowspan="3" class="data-info-header">Distribution Info.</td>
+					<td>Security Level</td>
+					<td>S1</td>
+				</tr> 
+				<tr>
+					<td>Frequency</td>
+					<td>F3</td>
+				</tr>
+				<tr>
+					<td>Available Policy</td>
+					<td>P1</td>
+				</tr>
+
+			</table> 
+
+			<div id="tree-div" style="width:900px;height:500px; display:none; border:1px solid black">
+				<div id="tree-container">
+
+				</div>
+				<div style="text-align-last: center;">
+					<button type="button">Tracking</button></td>
+				</div>
+			</div>
+			
+			<div id="force-div" style="width:900px;height:500px; display:block;">
+				<div id="force-container">
+
+				</div>
+				<div style="text-align-last: center;">
+					<button type="button">Tracking</button></td>
+				</div>
+			</div>
+
+
+
 
 		</div>
 	</main>

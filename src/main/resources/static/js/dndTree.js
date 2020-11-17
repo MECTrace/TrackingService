@@ -28,7 +28,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.*/
 
 // Get JSON data
 //var treeJSON = d3.json("flare.json", function(error, treeData) {
-function tracking() {
+function viewTree() {
 //var treeJSON = d3.hierarchy(treeData, function(d) { return d.children; });
     var boxWidth = 100;
     var boxHeight = 30;
