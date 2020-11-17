@@ -52,7 +52,7 @@ body {
 	left: 0px;
 	top: 0px;
 	background: #4D4D4D;
-	min-width: 273px;
+	min-width: 310px;
     margin-top: 102px;
 	/*background-color: #6b6a6a;*/
 	color: white;
@@ -65,10 +65,10 @@ body {
 
 main {
 	display: grid;
-	display: -ms-grid; -ms-grid-columns : 273px 1fr;
-	grid-template-columns: 273px 1fr;
+	display: -ms-grid; -ms-grid-columns : 310px 1fr;
+	grid-template-columns: 310px 1fr;
 	margin: 0 auto;
-	-ms-grid-columns: 273px 1fr;
+	-ms-grid-columns: 310px 1fr;
 }
 
 #ps-container {
@@ -124,7 +124,7 @@ main {
 	padding-left: 84px;
 	padding-top: 51px;
 	margin-top:102px;
-	margin-left:273px;
+	margin-left:310px;
 	margin-bottom: 20px;
 	min-width: 1538px;
 	
@@ -139,7 +139,7 @@ main {
 
 #ps-content table tr td {
 	border: 1px solid black;
-	padding: 10px;
+	padding: 5px;
 }
 
 #ps-content h2 {
@@ -193,7 +193,7 @@ main {
 }
 
 .sidebar table {
-	width: 273px;
+	width: 310px;
 }
 
 .sidebar td {

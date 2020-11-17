@@ -3,9 +3,56 @@
 <head>
 <meta charset="utf-8">
 <link rel="stylesheet" href="css/basic.css" type="text/css">
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="js/dndTree.js"></script>
 <script type="text/javascript" src="js/url.js"></script>
 <script type="text/javascript" src="js/basic.js"></script>
+
+<style type="text/css">
+  
+	.node {
+    cursor: pointer;
+  }
+
+  .overlay{
+      background-color:#EEE;
+  }
+   
+  .node rect {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+  }
+   
+  .node text {
+    font-size:10px; 
+    font-family:sans-serif;
+  }
+   
+  .link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+  }
+
+  .templink {
+    fill: none;
+    stroke: red;
+    stroke-width: 3px;
+  }
+
+  .ghostCircle.show{
+      display:block;
+  }
+
+  .ghostCircle, .activeDrag .ghostCircle{
+       display: none;
+  }
+
+</style>
+
+
 <title>Tracking Management Service</title>
 </head>
 <body>
@@ -18,49 +65,54 @@
 		<nav class="sidebar">
 			<ul class="sidebar-nav-container" id="sidebar-nav-container">
 				<li class="sidebar-nav-menu">Data Tracking</li>
-				<li class="sidebar-nav-item" id="index"><a href="index.html">Data
-						Hash Based</a></li>
-				<li class="sidebar-nav-item" id="search"><a href="search.html">맞춤
-						검색</a></li>
+				<li class="sidebar-nav-item" id="index"><a href="index.html">Data ID Based</a></li>
+				<li class="sidebar-nav-item" id="search"><a href="search.html">맞춤 검색</a></li>
+				<li class="sidebar-nav-item" id="analysis"><a href="#">Data Analysis</a></li>
+			</ul>
+			<ul class="sidebar-nav-container" id="sidebar-nav-container">
+				<li class="sidebar-nav-menu">Edge Node Management</li>
+				<li class="sidebar-nav-item" id="cpu"><a href="#">CPU Usage</a></li>
+				<li class="sidebar-nav-item" id="storage"><a href="#">Data Storage</a></li>
+				<li class="sidebar-nav-item" id="traffic"><a href="#">Network Traffic</a></li>
 			</ul>
 		</nav>
 
 
 		<div id="ps-content">
 			<div class="headline">Tracking Management Service</div>
-			<form>
+			<form >
 				<table style="border: 1px solid black; margin-top:10px">
 					<tr>
 						<td>Data ID:</td>
-						<td><input type="text"></input></td>
-						<td><button type="button">첨부하기</button></td>
+						<td><input type="text" id="dataIdText"></input></td>
+						<td><input type="file" name="file" value="첨부하기" id="uploadFile" onChange="upload()" /></td>
 						<td><button type="button">전송</button></td>
 					</tr>
 
 					<tr>
-						<td colspan="4" style="text-align: left">MetaData(0x..)</td>
+						<td colspan="4" style="text-align: left" id="metaData">MetaData(0x..)</td>
 
 					</tr>
 				</table>
 				<table style="border:1px solid black; border-collapse:collapse">
 					<tr>
 						<td rowspan="3">Data Info.</td>
-						<td>Data ID</td>
-						<td>0x3d9d...</td>
+						<td >Data ID</td>
+						<td id="dataId">0x3d9d...</td>
 					</tr>
 					<tr>
 						<td>timestamp</td>
-						<td>201022175335</td>
+						<td id="timestamp">201022175335</td>
 					</tr>
 					<tr>
 						<td>Data Format</td>
-						<td>NTCIP 1202</td>
+						<td id="dataFormat">NTCIP 1202</td>
 					</tr>
 
 					<tr>
 						<td rowspan="4">Source Info.</td>
 						<td>Device ID</td>
-						<td>0xc093c...</td>
+						<td id="deviceId">0xc093c...</td>
 					</tr>
 					<tr>
 						<td>Device Model</td>
@@ -89,21 +141,17 @@
 						<td>Available Policy</td>
 						<td>P1</td>
 					</tr>
-					<tr>
-						<td colspan="3"><svg></svg></td>
-					</tr>
-					<tr>
-						<td colspan="3" style="text-align:center">
-						<button type="button">Tracking</button></td>
-					</tr>
+					
 				</table>
 			</form>
+				<div id="tree-div" style="width:1000px;height:300px">
+					<div id="tree-container">
+					
+					</div>
+				</div>
 
-			<nav class="nav-container">
-				<ul id="pageNum">
-
-				</ul>
-			</nav>
+				<button type="button">Tracking</button></td>
+	
 
 		</div>
 	</main>

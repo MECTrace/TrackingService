@@ -18,8 +18,15 @@
 		<nav class="sidebar">
 			<ul class="sidebar-nav-container" id="sidebar-nav-container">
 				<li class="sidebar-nav-menu">Data Tracking</li>
-				<li class="sidebar-nav-item" id="index"><a href="index.html">Data Hash Based</a></li>
+				<li class="sidebar-nav-item" id="index"><a href="index.html">Data ID Based</a></li>
 				<li class="sidebar-nav-item" id="search"><a href="search.html">맞춤 검색</a></li>
+				<li class="sidebar-nav-item" id="analysis"><a href="#">Data Analysis</a></li>
+			</ul>
+			<ul class="sidebar-nav-container" id="sidebar-nav-container">
+				<li class="sidebar-nav-menu">Edge Node Management</li>
+				<li class="sidebar-nav-item" id="cpu"><a href="#">CPU Usage</a></li>
+				<li class="sidebar-nav-item" id="storage"><a href="#">Data Storage</a></li>
+				<li class="sidebar-nav-item" id="traffic"><a href="#">Network Traffic</a></li>
 			</ul>
 		</nav>
 
@@ -36,7 +43,7 @@
 					</tr>
 					<tr>
 						<td>Data Format:</td>
-						<td style="text-align: left">
+						<td colspan="3" style="text-align: left" >
 						<select	style="width: 80px; text-align-last: right">
 								<option>1</option>
 								<option>2</option>
@@ -53,6 +60,18 @@
 						<td colspan="3" style="padding-right: 20px"><input
 							type="text" style="width: 100%" /></td>
 					</tr>
+					
+					<tr>
+						<td>Edge ID:</td>
+						<td colspan="3" style="padding-right: 20px"><input
+							type="text" style="width: 100%" /></td>
+					</tr>
+					<tr>
+						<td>Event Type: </td>
+						<td colspan="3" style="padding-right: 20px"><input
+							type="text" style="width: 100%" /></td>
+					</tr>
+					
 					<tr>
 						<td colspan="4" style="text-align:right">
 						<button type="button"> 검색</button>

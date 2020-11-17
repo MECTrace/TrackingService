@@ -1,5 +1,7 @@
 
 var gPageNo = 1;
+
+var treeData;
 function loadDoc(registStatus) {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
@@ -26,40 +28,6 @@ function loadDoc(registStatus) {
 	xhttp.send();
 }
 
-function requestPage(pageNo, type) {
-	gPageNo = pageNo;
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			var list;
-			if ( loadUri.indexOf('driverlicense')!==-1 )
-				list = document.getElementById("driverLicenseList");
-			else
-				list = document.getElementById("smartkeyList");
-
-			var response = JSON.parse(this.responseText);
-
-			listReset(list);
-			pageListReset();
-			showPageList(response, type);
-			showContent(response.result, response.limit, list, type);
-
-		}
-	};
-
-	xhttp.open("GET", loadUri + type + "&page=" + pageNo);
-	// xhttp.setRequestHeader('Content-type', 'application/json');
-	xhttp.send();
-
-}
-function listReset(element) {
-	var tableRows = element.getElementsByTagName("tr");
-	var rowCount = tableRows.length;
-
-	for (var x = rowCount - 1; x >= 0; x--) {
-		element.removeChild(tableRows[x]);
-	}
-}
 function pageListReset() {
 	pageList = document.getElementById("pageNum");
 	pageList.innerHTML = "";
@@ -84,6 +52,49 @@ function showPageList(response, type) {
 
 	pageList.innerHTML += "<li><a href='#' onclick=requestPage(" + nextPage + ",'" + type + "')>＞</a></li>";
 	pageList.innerHTML += "<li><a href='#' onclick=requestPage(" + numOfPage + ",)>≫</a></li>";
+}
+
+
+function fileDetail(data) {
+	
+	var dataIdText = document.getElementById("dataIdText");
+	var metaData = document.getElementById("metaData");
+	var dataId = document.getElementById("dataId");
+	var timestamp = document.getElementById("timestamp");
+	var dataFormat = document.getElementById("dataFormat");
+	var deviceId = document.getElementById("deviceId");
+	
+	
+	dataIdText.value = data["dataId"];
+	metaData.innerHTML = data["metaData"];
+	dataId.innerHTML = data["dataId"];
+	timestamp.innerHTML = data["timestamp"];
+	dataFormat.innerHTML = data["dataFormat"];
+	deviceId.innerHTML = data["deviceId"];
+	
+	treeData = JSON.parse(data["tracking"]);
+	
+	tracking();
+	
+	
+}
+
+
+function upload() {
+	var xhttp = new XMLHttpRequest();
+	const fd = new FormData();
+	const selectedFile = document.getElementById('uploadFile').files[0];
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var response = JSON.parse(this.responseText);
+			fileDetail(response);
+		}
+	};
+	
+	xhttp.open("POST", loadUri + "/upload");
+	fd.append('file', selectedFile);
+	
+	xhttp.send(fd);
 }
 
 function showContent(data, count, list, type) {
