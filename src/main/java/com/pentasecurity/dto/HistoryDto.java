@@ -1,5 +1,7 @@
 package com.pentasecurity.dto;
 
+import com.pentasecurity.entity.History;
+
 import lombok.Data;
 
 @Data
@@ -13,11 +15,12 @@ public class HistoryDto {
 	private String trace;
 	private String receivedTime;
 	
+	private String dataFormat;
 	
 	public HistoryDto() {
 		
 	}
-	public HistoryDto(String dataId, String fromType, String fromId, String toType, String toId, String trace, String receivedTime) {
+	public HistoryDto(String dataId, String fromType, String fromId, String toType, String toId, String trace, String receivedTime, String dataFormat) {
 		this.dataId = dataId;
 		this.fromType = fromType;
 		this.fromId = fromId;
@@ -25,6 +28,22 @@ public class HistoryDto {
 		this.toId = toId;
 		this.trace = trace;
 		this.receivedTime = receivedTime;
+		this.dataFormat = dataFormat;
+		
+	}
+	
+	public HistoryDto(History h) {
+		
+		this.dataId = h.getDataId();
+		this.fromId = h.getFromId();
+		this.fromType = h.getFromType();
+		this.toType = h.getToType();
+		this.toId = h.getToId();
+		this.trace = h.getTrace();
+		this.receivedTime = h.getReceivedTime();
+		
+		if(h.getMaster() != null)
+			this.dataFormat = h.getMaster().getDataFormat();
 		
 	}
 }

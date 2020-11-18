@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.pentasecurity.dto.ConditionSearchDto;
+import com.pentasecurity.dto.HistoryDto;
 import com.pentasecurity.dto.MasterDto;
 import com.pentasecurity.entity.History;
 import com.pentasecurity.service.TrackingServiceService;
@@ -54,8 +55,9 @@ public class TrackingServiceController {
 		Map<String, Object> ret = new HashMap<>();
 		
 		
-		List<History> data = trackingServiceService.conditionalSearch(condition);
+		List<HistoryDto> data = trackingServiceService.conditionalSearch(condition);
 		
+		ret.put("total", data.size());
 		ret.put("result",data);
 		
 		return ret;
@@ -92,6 +94,37 @@ public class TrackingServiceController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		return ret;
+	}
+	
+	@GetMapping("/nodetrace")
+	private Map<String, Object> getNodeTrace(
+			@RequestParam(name="nodeName", defaultValue="device-2") String nodeName,
+			@RequestParam(name="dataId", defaultValue="1ccd607a3d8ba9fe30bedffbd7df294e40599abaee707440dcd3e0f3845f05b3") String dataId) {
+		Map<String, Object> ret = new HashMap<>();
+		List<HistoryDto> historyDto = trackingServiceService.getNodeTrace(nodeName, dataId);
+		Map<String, Object> tmp = new HashMap<>();
+		
+		tmp.put("total", historyDto.size());
+		tmp.put("detail", historyDto);
+		
+		
+		ret.put("result", tmp);
+		
+		MasterDto masterDto = trackingServiceService.getMasterTable(dataId);
+		ret.put("dataId", dataId);
+		
+		if(masterDto != null) {
+			
+			ret.put("timestamp", masterDto.getCreateTime());
+			ret.put("dataFormat", masterDto.getDataFormat());
+			ret.put("deviceId", masterDto.getSourceId());
+			ret.put("tree", trackingServiceService.getTree(dataId));
+			ret.put("treeForce", trackingServiceService.getTreeForce(dataId));
+			
+		}
+		
 		
 		return ret;
 	}

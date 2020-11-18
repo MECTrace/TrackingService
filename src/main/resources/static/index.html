@@ -6,9 +6,10 @@
 	<link rel="stylesheet" href="css/basic.css" type="text/css">
 	<script src="https://d3js.org/d3.v3.min.js"></script>
 	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="js/url.js"></script>
 	<script type="text/javascript" src="js/dndTree.js"></script>
 	<script type="text/javascript" src="js/force.js"></script>
-	<script type="text/javascript" src="js/url.js"></script>
+	
 	<script type="text/javascript" src="js/basic.js"></script>
 
 	<style type="text/css">
@@ -65,12 +66,12 @@
 </head>
 
 <body>
-	<input type="hidden" id="parentRegnumber" />
+	<input type="hidden" id="selected-node" />
 
 	<div class="ps-header">Tracking Management Service</div>
 
 	<main>
-
+		<
 		<nav class="sidebar">
 			<ul class="sidebar-nav-container" id="sidebar-nav-container">
 				<li class="sidebar-nav-menu">Data Tracking</li>
@@ -94,7 +95,7 @@
 						<td>Data ID:</td>
 						<td><input type="text" id="dataIdText"></input></td>
 						<td><input type="file" name="file" value="첨부하기" id="uploadFile" onChange="upload()" /></td>
-						<td><button type="button">전송</button></td>
+						<td><button type="button" onClick="nodeDetail()">전송</button></td>
 					</tr>
 
 					<tr>

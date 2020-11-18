@@ -2,8 +2,22 @@ function type(value) {
     return value.tagName;
   }
 
-  function click(d) {
-    console.log(d);
+
+function nodeDetail() {
+	detail();
+}
+
+function detail(d) {
+	
+	var openWin;
+	document.getElementById("selected-node").value = d["deviceid"];
+	openWin = window.open("nodeDetail.html",
+            "nodeDetail", "width=1300px, height=600, resizable=no, scrollbars=no, toolbars=no, menubar=no");
+}
+
+
+function click(d) {
+	detail(d);
 }
 
 function force() {

@@ -72,6 +72,55 @@ function upload() {
 	xhttp.send(fd);
 }
 
+function listReset(element) {
+	var tableRows = element.getElementsByTagName("tr");
+	var rowCount = tableRows.length;
+
+	for (var x = rowCount - 1; x >= 1; x--) {
+		element.deleteRow(1);
+	}
+}
+
+function searchResult(data) {
+	let length = data["total"];
+	let result = data["result"];
+	
+	var table = document.getElementById("condition-search-result-table");
+	listReset(table);
+	for (var i = 0; i < length; i++) {
+		var elementList = table.insertRow();
+		var cell = elementList.insertCell();
+		
+		cell.innerHTML = result[i].dataId;
+
+		cell = elementList.insertCell();
+		cell.innerHTML = result[i].receivedTime;
+		//cell.align = "left";
+
+		cell = elementList.insertCell();
+		cell.innerHTML = result[i].dataFormat;
+		cell.align = "center";
+		
+		cell = elementList.insertCell();
+		cell.innerHTML = result[i].fromId;
+		cell.align = "center";
+		
+		cell = elementList.insertCell();
+		cell.innerHTML = "RSU-v1.23";
+		cell.align = "center";
+		
+		cell = elementList.insertCell();
+		cell.innerHTML = "<button href='#' type='button'>상세보기</button>";;
+		cell.align = "center";
+		
+		cell = elementList.insertCell();
+		cell.innerHTML = "<button href='#' type='button'>다운로드</button>";;
+		cell.align = "center";
+		
+	}
+		
+}
+
 function getFormData($form){
     var unindexed_array = $form.serializeArray();
     var indexed_array = {};
@@ -85,17 +134,6 @@ function getFormData($form){
 
 function conditionalSearch() {
 	
-	var xhttp = new XMLHttpRequest();
-	const fd = new FormData();
-	
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			var response = JSON.parse(this.responseText);
-			console.log(response);
-		}
-	};
-	 
-	xhttp.open("POST", loadUri + "/condition/search");
 	
 	var formData = $("#search-form");
 	$.ajax({
@@ -104,41 +142,15 @@ function conditionalSearch() {
 		contentType: "application/json",
 		data:JSON.stringify(getFormData(formData)),
 		success:function(data){
-			console.log(data);
+			//console.log(data);
+			searchResult(data);
 		},
 		error: function(xhr, status, error) {
 			console.log(error);
 		}
 	
 	});
-	
-	/*
-	var searchForm = document.getElementById("search-form");
-	
-
-		var start =  document.getElementById("timeStampStart").value;
-	var end =  document.getElementById("timeStampEnd").value;
-	var dataFormat =  document.getElementById("dataformat-selectbox").value;
-	var deviceId =  document.getElementById("deviceId").value;
-	var deviceModel =  document.getElementById("deviceModel").value;
-	var edgeId =  document.getElementById("edgeId").value;
-	var eventType =  document.getElementById("eventType").value;
-
-	//fd.setHeader('content-type','application/json')
-	
-	fd.append("timeStampStart", start.toString());
-	fd.append("timeStampEnd", end.toString());
-	fd.append("dataFormat", dataFormat.toString());
-	fd.append("deviceId", deviceId.toString());
-	fd.append("deviceModel", deviceModel.toString());
-	fd.append("edgeId", edgeId.toString());
-	fd.append("eventType", eventType.toString());
-	*/
-	
-	//xhttp.send(fd);
-	//xhttp.send(searchForm);
 }
-
 
 $(window).on("load", function () {
 	

@@ -82,11 +82,14 @@ public class HistoryRepositoryCustomImpl implements HistoryRepositoryCustom{
 					
 					);		
 		}
-		res.add(cb.or(cb.equal(history.get("fromId"), condition.getDeviceId()),
-				cb.equal(history.get("fromId"), condition.getEdgeId()))
-					);
-		res.add(cb.equal(history.get("master").get("dataFormat"), condition.getDataFormat()));
-		
+		if(!StringUtils.isEmpty(condition.getDeviceId()) || !StringUtils.isEmpty(condition.getEdgeId())) {
+			res.add(cb.or(cb.equal(history.get("fromId"), condition.getDeviceId()),
+					cb.equal(history.get("fromId"), condition.getEdgeId()))
+						);
+		}
+		if(!StringUtils.isEmpty(condition.getDataFormat())) {
+			res.add(cb.equal(history.get("master").get("dataFormat"), condition.getDataFormat()));
+		}
 		/*
 		if(!StringUtils.isEmpty(condition.getDeviceId())) {
 			res.add(

@@ -17,6 +17,7 @@ import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import com.pentasecurity.dto.ConditionSearchDto;
+import com.pentasecurity.dto.HistoryDto;
 import com.pentasecurity.dto.MasterDto;
 import com.pentasecurity.entity.Code;
 import com.pentasecurity.entity.History;
@@ -72,6 +73,22 @@ public class TrackingServiceService {
 		return ret;
 	}
 	
+	public List<HistoryDto> getNodeTrace(String nodeName, String dataId) {
+		
+		
+		List<History> fromNode = historyRepository.findByFromIdAndDataId(nodeName, dataId);
+		List<History> toNode = historyRepository.findByToIdAndDataId(nodeName, dataId);
+		
+		toNode.addAll(fromNode);
+		
+		List<HistoryDto> ret = new ArrayList<>();
+		
+		for(History h : toNode) {
+			ret.add(new HistoryDto(h));
+		}
+		return ret;
+	}
+	
 	public MasterDto getMasterTable(String dataId) {
 		Master master = masterRepository.findById(dataId).orElse(null);
 		
@@ -87,13 +104,24 @@ public class TrackingServiceService {
 		return codeRepository.findAll();
 	}
 	
-	public List<History> conditionalSearch(ConditionSearchDto condition) {
+	public List<HistoryDto> conditionalSearch(ConditionSearchDto condition) {
+				
+		List<History> history = historyRepository.findByConditional(condition);
+		List<HistoryDto> historyDto = new ArrayList<>();
+		
+		for(History h : history) {
+			historyDto.add(new HistoryDto(h));
+		}
+		
+		return historyDto;	
+	}
+	
+	public String makeTreeForce(ConditionSearchDto condition) {
 		String ret = "";
 		
-		List<History> history = historyRepository.findByConditional(condition);
 		
 		
-		return history;	
+		return ret;
 	}
 	
 	private String encrypt(String s, String messageDigest) {
