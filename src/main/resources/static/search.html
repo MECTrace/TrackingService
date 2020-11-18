@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8">
-<link rel="stylesheet" href="css/basic.css" type="text/css">
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script type="text/javascript" src="js/url.js"></script>
-<script type="text/javascript" src="js/basic.js"></script>
-<title>Tracking Management Service</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="css/basic.css" type="text/css">
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script type="text/javascript" src="js/url.js"></script>
+	<script type="text/javascript" src="js/basic.js"></script>
+	<title>Tracking Management Service</title>
 </head>
-<body>
+
+<body onload="loadDataFormat()">
 	<input type="hidden" id="parentRegnumber" />
 
 	<div class="ps-header">Tracking Management Service</div>
@@ -32,51 +34,44 @@
 
 
 		<div id="ps-content">
-			<div class="headline">Tracking Management Service</div>
-			<form>
+			<div class="headline">Conditional Based Search</div>
+			<form id="search-form" enctype="application/json">
 				<table style="border: 1px solid black; margin-top: 10px">
 					<tr>
 						<td>Time Stamp:</td>
-						<td><input type="text" /></td>
+						<td><input type="text" name="timeStampStart" value="2020-11-12"></td>
 						<td>~</td>
-						<td><input type="text"></td>
+						<td><input type="text" name="timeStampEnd" value="2020-11-14"></td>
 					</tr>
 					<tr>
 						<td>Data Format:</td>
-						<td colspan="3" style="text-align: left" >
-						<select	style="width: 80px; text-align-last: right">
-								<option>1</option>
-								<option>2</option>
-								<option>3</option>
-						</select></td>
+						<td colspan="3" style="text-align: left">
+							<select id="dataformat-selectbox" name="dataFormat"  style="text-align-last: right">
+							</select></td>
 					</tr>
 					<tr>
 						<td>Device ID:</td>
-						<td colspan="3" style="padding-right: 20px"><input
-							type="text" style="width: 100%" /></td>
+						<td colspan="3" style="padding-right: 20px"><input name="deviceId" type="text" style="width: 100%" /></td>
 					</tr>
 					<tr>
 						<td>Device Model:</td>
-						<td colspan="3" style="padding-right: 20px"><input
-							type="text" style="width: 100%" /></td>
+						<td colspan="3" style="padding-right: 20px"><input name="deviceModel" type="text" style="width: 100%" /></td>
 					</tr>
-					
+
 					<tr>
 						<td>Edge ID:</td>
-						<td colspan="3" style="padding-right: 20px"><input
-							type="text" style="width: 100%" /></td>
+						<td colspan="3" style="padding-right: 20px"><input name="edgeId" type="text" style="width: 100%" /></td>
 					</tr>
 					<tr>
 						<td>Event Type: </td>
-						<td colspan="3" style="padding-right: 20px"><input
-							type="text" style="width: 100%" /></td>
+						<td colspan="3" style="padding-right: 20px"><input name="eventType" type="text" style="width: 100%" /></td>
 					</tr>
-					
+
 					<tr>
 						<td colspan="4" style="text-align:right">
-						<button type="button"> 검색</button>
-						 <button type="button">Tracking</button>
-						 </td>
+							<button type="button" onclick="conditionalSearch()"> 검색</button>
+							<button type="button">Tracking</button>
+						</td>
 					</tr>
 				</table>
 			</form>

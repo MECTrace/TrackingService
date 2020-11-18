@@ -10,16 +10,18 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-import javax.persistence.Tuple;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import com.pentasecurity.dto.ConditionSearchDto;
 import com.pentasecurity.dto.MasterDto;
+import com.pentasecurity.entity.Code;
 import com.pentasecurity.entity.History;
 import com.pentasecurity.entity.Master;
+import com.pentasecurity.repository.CodeRepository;
 import com.pentasecurity.repository.HistoryRepository;
 import com.pentasecurity.repository.MasterRepository;
 
@@ -31,6 +33,7 @@ public class TrackingServiceService {
 	
 	private final HistoryRepository historyRepository;
 	private final MasterRepository masterRepository;
+	private final CodeRepository codeRepository;
 	
 	
 	
@@ -45,6 +48,11 @@ public class TrackingServiceService {
 	public String getTree(String dataId) {
 		List<History> ret = historyRepository.findByDataId(dataId);
 		return tree(ret, getMasterTable(dataId));
+	}
+	
+	public String getTreeForce(String dataId) {
+		List<History> ret = historyRepository.findByDataId(dataId);
+		return treeForce(ret, getMasterTable(dataId));
 	}
 	
 	public List<History> searchAll() {
@@ -74,38 +82,18 @@ public class TrackingServiceService {
 		return masterDto;
 	}
 	
-	public String test() {
+	public List<Code> getDataFormatList() {
+		
+		return codeRepository.findAll();
+	}
+	
+	public List<History> conditionalSearch(ConditionSearchDto condition) {
 		String ret = "";
-		ConditionSearchDto c = new ConditionSearchDto();
 		
-		c.setTimeStampStart("2020-11-12 19:00:00");
-		c.setTimeStampEnd("2020-11-13 19:00:00");
-		//c.setDeviceId("device-1");
-		c.setEdgeId("edge-4");
-		c.setDataFormat("JSON");
-		/*
-		List<Tuple> history = historyRepository.findByConditional(c);
+		List<History> history = historyRepository.findByConditional(condition);
 		
-		for(Tuple t : history) {
-			History h = t.get("history", History.class);
-			Master m = t.get("master", Master.class);
-			
-			System.out.println(h);
-			System.out.println(m);
-			System.out.println("===============================================================================");
-			
-			
-		}*/
 		
-		List<History> history = historyRepository.findByConditional(c);
-		
-		for(History h: history) {
-			System.out.println(h);
-		}
-		
-				
-		
-		return ret;	
+		return history;	
 	}
 	
 	private String encrypt(String s, String messageDigest) {
@@ -122,10 +110,10 @@ public class TrackingServiceService {
         }
     }
 	
+	@SuppressWarnings("unchecked")
 	private String tree(List<History> history, MasterDto masterDto) {
 		String ret ="";
 		
-		History start;
 		Queue<History> queue = new LinkedList<>();
 		
 		Map<String, JSONObject> treeNode = new HashMap<>();
@@ -146,7 +134,6 @@ public class TrackingServiceService {
 		
 		List<String> memberList = new ArrayList<>(nodeName);
 		
-		Set<String> visited = new HashSet<>();
 		
 		for(String member: memberList) {
 			JSONObject node = new JSONObject();
@@ -192,4 +179,42 @@ public class TrackingServiceService {
 		return ret;
 	}
 
+	@SuppressWarnings("unchecked")
+	private String treeForce(List<History> history, MasterDto masterDto) { 
+		
+		String ret ="";
+				
+		JSONObject cloud = new JSONObject();
+		
+		String treeOrigin = tree(history, masterDto);
+		JSONParser parser = new JSONParser();
+		JSONObject tree = null;
+		try {
+			tree = (JSONObject)parser.parse(treeOrigin);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(tree == null) {
+			ret = "error";
+		}
+		else {
+			
+			JSONArray child = (JSONArray)tree.get("children");
+			JSONArray child2 = (JSONArray)(((JSONObject)child.get(0)).get("children"));
+			
+			child2.add(cloud);
+			//TODO: devicetype, timestamp 채울것
+			cloud.put("devicetype", "Central Cloud");
+			cloud.put("timestamp", (String)((JSONObject)child.get(0)).get("timestamp"));
+			cloud.put("actiontype", "cloud");
+			cloud.put("devicetype", "Central Cloud");
+			cloud.put("deviceid", "Central Cloud");
+			
+			ret= tree.toJSONString();
+		}
+		
+		
+		return ret;
+	}
 }

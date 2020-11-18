@@ -328,3 +328,8 @@ main {
 .selected {
 	background-color: #187FC4;
 }
+
+.d3-graph {
+	margin: 10px 0 10px 0;
+	padding:10px 0 10px 0;
+}

@@ -1,59 +1,28 @@
 
-var gPageNo = 1;
-
 var treeData;
 
 var jsonData;
-function loadDoc(registStatus) {
+
+function loadDataFormat() { 
+	
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 			var response = JSON.parse(this.responseText);
-			if (response.code != 0)
-				return;
-			var list;
-			if (loadUri.indexOf('driverlicense') !== -1 || loadUri.indexOf('business') !== -1) {
-				list = document.getElementById("driverLicenseList");
+			var selectbox = document.getElementById("dataformat-selectbox");
+			var dataFormat = response["result"];
+			
+			for (var i = 0; i < dataFormat.length; i++) {
+				var option = document.createElement("option");
+				option.text = dataFormat[i]["codeName"];
+				option.value = dataFormat[i]["codeName"];
+				selectbox.options.add(option);
 			}
-			else {
-				list = document.getElementById("smartkeyList");
-			}
-
-			showContent(response.result, response.limit, list, registStatus);
-
-			showPageList(response, registStatus);
 		}
 	};
 
-	xhttp.open("GET", loadUri + registStatus + "&page=1");
-	// xhttp.setRequestHeader('Content-type', 'application/json');
+	xhttp.open("GET", loadUri + "/dataformat"); 
 	xhttp.send();
-}
-
-function pageListReset() {
-	pageList = document.getElementById("pageNum");
-	pageList.innerHTML = "";
-}
-function showPageList(response, type) {
-	var numOfPage = response.totalpage;
-
-	var pageList = document.getElementById("pageList");
-
-	var currentPage = response.page;
-	var prevPage = (response.page - 1 <= 0) ? 1 : (response.page - 1);
-	var nextPage = (response.page + 1 > numOfPage) ? numOfPage
-			: (response.page + 1);
-	
-	$( '.nav-container' ).width($( '.content-table' ).width());
-	var pageList = document.getElementById("pageNum");
-	pageList.innerHTML = "<li><a href='#' onclick=requestPage(1,'" + type + "')>≪</a></li>";
-	pageList.innerHTML += "<li><a href='#' onclick=requestPage(" + prevPage + ",'" + type + "')>＜</a></li>";
-	for (var i = 0; i < parseInt(numOfPage); i++) {
-		pageList.innerHTML += "<li><a href='#' onclick=requestPage(" + (i + 1) + ",'" + type + "')>" + (i + 1) + "</a></li>";
-	}
-
-	pageList.innerHTML += "<li><a href='#' onclick=requestPage(" + nextPage + ",'" + type + "')>＞</a></li>";
-	pageList.innerHTML += "<li><a href='#' onclick=requestPage(" + numOfPage + ",)>≫</a></li>";
 }
 
 
@@ -74,8 +43,10 @@ function fileDetail(data) {
 	dataFormat.innerHTML = data["dataFormat"];
 	deviceId.innerHTML = data["deviceId"];
 	
-	treeData = JSON.parse(data["tracking"]);
-	jsonData = JSON.parse(data["tracking"]);
+	treeData = JSON.parse(data["tree"]);
+	jsonData = JSON.parse(data["treeForce"]);
+	
+	console.log(JSON.parse(data["treeForce"]));
 	viewTree();
 	force();
 	
@@ -101,148 +72,73 @@ function upload() {
 	xhttp.send(fd);
 }
 
-function showContent(data, count, list, type) {
-	var registerCount = (data.length < count) ? data.length : count;
-	if (type == 'APPLY') {
-		for (var i = 0; i < registerCount; i++) {
-			var elementList = list.insertRow();
-			var cell = elementList.insertCell();
-			cell.innerHTML = data[i].regnumber;
+function getFormData($form){
+    var unindexed_array = $form.serializeArray();
+    var indexed_array = {};
 
-			cell = elementList.insertCell();
-			cell.innerHTML = data[i].name;
-			cell.align = "left";
-
-			cell = elementList.insertCell();
-			cell.innerHTML = data[i].did;
-			
-											
-			cell = elementList.insertCell();
-			cell.innerHTML = "<button href='#' type='button' onclick=application(" + "'"
-					+ data[i].regnumber + "')>자세히</button>";
-	
-
-			cell = elementList.insertCell();
-			cell.innerHTML = "<button href='#' onclick=confirm(" + "'"
-					+ data[i].regnumber + "'" + ",'Approve')>승인</button>";
-
-			cell = elementList.insertCell();
-			cell.innerHTML = "<button href='#' onclick=confirm(" + "'"
-					+ data[i].regnumber + "'" + ",'Reject')>거부</button>";
-
-		}
-	} else {
-		var tmp = document.getElementById("content-table");
-		for (var i = 0; i < registerCount; i++) {
-			var elementList = list.insertRow();
-			var cell = elementList.insertCell();
-
-			if(data[i].regdateDetail != null)
-				cell.innerHTML = dateToStringDetail(data[i].regdateDetail);
-			else cell.innerHTML = dateToStringDetail(data[i].approvaldateDetail);
-			
-
-			cell = elementList.insertCell();
-			cell.innerHTML = data[i].regnumber;
-
-			cell = elementList.insertCell();
-			// cell.innerHTML = "<a href='#' onclick=selectedPost(" + data[i].id
-			// + ");>" + data[i].title + "</a>";
-			cell.innerHTML = data[i].name;
-			cell.align = "left";
-
-			cell = elementList.insertCell();
-			cell.innerHTML = data[i].did;
-
-			cell = elementList.insertCell();
-			var status = data[i].status;
-			switch(status) {
-				case "Approve":
-					status = "승인";
-					break;
-				case "Disposal":
-					status = "폐기";
-					break;
-				case "Reject":
-					status = "거부";
-					break;
-			}
-			cell.innerHTML = status;
-			
-			if(tmp.rows[0].outerText.indexOf('발급') > -1){
-			cell = elementList.insertCell();
-				var imagesrc = '';
-				if(data[i].download == 0) {
-					imagesrc = 'image/caution.png';
-				}
-				else {
-					imagesrc = 'image/confirm.png';
-				}
-				if(data[i].status == 'Disposal' || data[i].status == 'Reject') {
-					imagesrc = 'image/reject.png';
-				}
-				cell.innerHTML = "<img src='" + imagesrc + "' width=40%/>"
-				cell = elementList.insertCell();
-				if(imagesrc.indexOf('confirm') != -1) {
-					cell.innerHTML = "<button type='button' onclick=showCredential(" + "'"
-							+ data[i].regnumber + "')>VC보기" +"</button>";
-				}
-				else {
-					cell.innerHTML = "<button type='button' onclick=showCredential(" + "'"
-					+ data[i].regnumber + "') disabled>VC보기" +"</button>";
-					
-				} 
-				
-				cell = elementList.insertCell();
-				cell.innerHTML = "<button type='button' onclick=detail(" + "'"
-						+ data[i].regnumber + "')>자세히</button>";
-			}
-			cell = elementList.insertCell();
-			cell.innerHTML = "<button onclick=confirm(" + "'"
-					+ data[i].regnumber + "'" + ",'Disposal')>폐기</button>";
-			
-
-		}
-	}
-}
-
-function showCredential(regNumber) {
-	document.getElementById("detail-regnumber").value = regNumber;
-	openWin = window.open("credential.html",
-            "detailForm", "width=600, height=600, resizable=no, scrollbars=no, toolbars=no, menubar=no");
-}
-
-function detail(regNumber) {
-	
-	var openWin;
-	document.getElementById("detail-regnumber").value = regNumber;
-	openWin = window.open("detail.html",
-            "detailForm", "width=600, height=600, resizable=no, scrollbars=no, toolbars=no, menubar=no");
-
-	
-
-}
-
-function application(regNumber) {
-	
-	var openWin;
-	
-	document.getElementById("parentRegnumber").value = regNumber;
-	openWin = window.open("smartkeyApplication.html",
-            "detailForm", "width=700, height=300, resizable=no, scrollbars=no, toolbars=no, menubar=no");
-
-
-
-}
-
-$(document).ready(function() {
-	var includes = $('[data-include-html]');
-    jQuery.each(includes, function(){
-      var file = $(this).data('includeHtml');
-      $(this).load(file);
+    $.map(unindexed_array, function(n, i){
+        indexed_array[n['name']] = n['value'];
     });
-    
-});
+
+    return indexed_array;
+}
+
+function conditionalSearch() {
+	
+	var xhttp = new XMLHttpRequest();
+	const fd = new FormData();
+	
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var response = JSON.parse(this.responseText);
+			console.log(response);
+		}
+	};
+	 
+	xhttp.open("POST", loadUri + "/condition/search");
+	
+	var formData = $("#search-form");
+	$.ajax({
+		url: loadUri + "/condition/search",
+		type:"POST",
+		contentType: "application/json",
+		data:JSON.stringify(getFormData(formData)),
+		success:function(data){
+			console.log(data);
+		},
+		error: function(xhr, status, error) {
+			console.log(error);
+		}
+	
+	});
+	
+	/*
+	var searchForm = document.getElementById("search-form");
+	
+
+		var start =  document.getElementById("timeStampStart").value;
+	var end =  document.getElementById("timeStampEnd").value;
+	var dataFormat =  document.getElementById("dataformat-selectbox").value;
+	var deviceId =  document.getElementById("deviceId").value;
+	var deviceModel =  document.getElementById("deviceModel").value;
+	var edgeId =  document.getElementById("edgeId").value;
+	var eventType =  document.getElementById("eventType").value;
+
+	//fd.setHeader('content-type','application/json')
+	
+	fd.append("timeStampStart", start.toString());
+	fd.append("timeStampEnd", end.toString());
+	fd.append("dataFormat", dataFormat.toString());
+	fd.append("deviceId", deviceId.toString());
+	fd.append("deviceModel", deviceModel.toString());
+	fd.append("edgeId", edgeId.toString());
+	fd.append("eventType", eventType.toString());
+	*/
+	
+	//xhttp.send(fd);
+	//xhttp.send(searchForm);
+}
+
 
 $(window).on("load", function () {
 	
@@ -262,30 +158,6 @@ $(window).on("load", function () {
 
 });
 
-
-function confirm(regNumber, type) {
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			// 무얼할지 적자 이건 왜 안뜰까
-			var response = JSON.parse(this.responseText);
-			if (response.code != 0)
-				alert(response.message);
-			requestPage(gPageNo, type);
-		}
-	};
-
-	var data = new FormData();
-
-	data.append('regnumber', regNumber);
-	data.append('type', type);
-
-	xhttp.open("POST", confirmUri, false);
-	// xhttp.setRequestHeader('Content-type', 'application/json');
-
-	xhttp.send(data);
-
-}
 
 function dateToString(date){ 
 	

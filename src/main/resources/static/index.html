@@ -20,6 +20,13 @@
 			background-color: #FFFFFF;
 		}
 
+
+		.node circle {
+			fill: #fff;
+			stroke: steelblue;
+			stroke-width: 1.5px;
+		}
+
 		.node rect {
 			fill: #fff;
 			stroke: steelblue;
@@ -33,7 +40,7 @@
 
 		.link {
 			fill: none;
-			stroke: red;
+			stroke: #ccc;
 			stroke-width: 1.5px;
 		}
 
@@ -78,7 +85,7 @@
 				<li class="sidebar-nav-item" id="traffic"><a href="#">Network Traffic</a></li>
 			</ul>
 		</nav>
-		
+
 		<div id="ps-content">
 			<div class="headline">Data ID Based Search</div>
 			<form>
@@ -94,9 +101,10 @@
 						<td colspan="4" style="text-align: left" id="metaData">MetaData(0x..)</td>
 
 					</tr>
-				</table> 
+				</table>
 			</form>
-			<table id="data-info" class="data-info" style="margin:10px 0px 10px 0px; width:900px;  border-collapse:collapse; display:none;">
+			<table id="data-info" class="data-info"
+				style="margin:10px 0px 10px 0px; width:900px;  border-collapse:collapse; display:none;">
 				<tr>
 					<td rowspan="3" class="data-info-header">Data Info.</td>
 					<td>Data ID</td>
@@ -134,7 +142,7 @@
 					<td rowspan="3" class="data-info-header">Distribution Info.</td>
 					<td>Security Level</td>
 					<td>S1</td>
-				</tr> 
+				</tr>
 				<tr>
 					<td>Frequency</td>
 					<td>F3</td>
@@ -144,27 +152,28 @@
 					<td>P1</td>
 				</tr>
 
-			</table> 
+			</table>
+			<div class="d3-graph">
 
-			<div id="tree-div" style="width:900px;height:500px; display:none; border:1px solid black">
-				<div id="tree-container">
+				<div id="tree-div" style="width:900px;height:500px; display:none; border:1px solid black">
+					<div id="tree-container">
 
+					</div>
+					<div style="text-align-last: center;">
+						<button type="button">Tracking</button></td>
+					</div>
 				</div>
-				<div style="text-align-last: center;">
-					<button type="button">Tracking</button></td>
+
+				<div id="force-div" style="width:900px;height:500px; display:block; border:1px solid black">
+					<div id="force-container">
+
+					</div>
+					<div style="text-align-last: center;">
+						<button type="button">Tracking</button></td>
+					</div>
 				</div>
+
 			</div>
-			
-			<div id="force-div" style="width:900px;height:500px; display:block;">
-				<div id="force-container">
-
-				</div>
-				<div style="text-align-last: center;">
-					<button type="button">Tracking</button></td>
-				</div>
-			</div>
-
-
 
 
 		</div>
