@@ -2,6 +2,7 @@
 var treeData;
 
 var jsonData;
+var jsonData2;
 
 function loadDataFormat() { 
 	
@@ -25,6 +26,19 @@ function loadDataFormat() {
 	xhttp.send();
 }
 
+
+function conditionalTracking() {
+	
+	var conditionSearchResultTable = document.getElementById("condition-search-result-table");
+	var forceDiv = document.getElementById("force-div");
+	
+	conditionSearchResultTable.style.display="none";
+	forceDiv.style.display="block";
+	
+	force();
+	
+	
+}
 
 function fileDetail(data) {
 	
@@ -144,6 +158,7 @@ function conditionalSearch() {
 		success:function(data){
 			//console.log(data);
 			searchResult(data);
+			jsonData2 = JSON.parse(data["tree"]);
 		},
 		error: function(xhr, status, error) {
 			console.log(error);

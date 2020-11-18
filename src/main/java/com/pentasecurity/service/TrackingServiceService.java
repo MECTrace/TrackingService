@@ -12,13 +12,12 @@ import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import com.pentasecurity.dto.ConditionSearchDto;
 import com.pentasecurity.dto.HistoryDto;
 import com.pentasecurity.dto.MasterDto;
+import com.pentasecurity.dto.NodeGraphInfo;
 import com.pentasecurity.entity.Code;
 import com.pentasecurity.entity.History;
 import com.pentasecurity.entity.Master;
@@ -53,7 +52,7 @@ public class TrackingServiceService {
 	
 	public String getTreeForce(String dataId) {
 		List<History> ret = historyRepository.findByDataId(dataId);
-		return treeForce(ret, getMasterTable(dataId));
+		return treeForce(ret);
 	}
 	
 	public List<History> searchAll() {
@@ -107,6 +106,9 @@ public class TrackingServiceService {
 	public List<HistoryDto> conditionalSearch(ConditionSearchDto condition) {
 				
 		List<History> history = historyRepository.findByConditional(condition);
+		
+		treeForce(history);
+		
 		List<HistoryDto> historyDto = new ArrayList<>();
 		
 		for(History h : history) {
@@ -117,8 +119,10 @@ public class TrackingServiceService {
 	}
 	
 	public String makeTreeForce(ConditionSearchDto condition) {
-		String ret = "";
+		String ret = null;
+		List<History> history = historyRepository.findByConditional(condition);
 		
+		ret = treeForce(history);
 		
 		
 		return ret;
@@ -207,7 +211,10 @@ public class TrackingServiceService {
 		return ret;
 	}
 
+	
+	/*
 	@SuppressWarnings("unchecked")
+	
 	private String treeForce(List<History> history, MasterDto masterDto) { 
 		
 		String ret ="";
@@ -241,6 +248,73 @@ public class TrackingServiceService {
 			
 			ret= tree.toJSONString();
 		}
+		
+		
+		return ret;
+	}
+	
+	*/
+	@SuppressWarnings("unchecked")
+	private String treeForce(List<History> history) {
+		String ret ="";
+		
+		
+		Map<String, NodeGraphInfo> nodeInfo = new HashMap<>();
+		JSONArray nodeArray = new JSONArray();
+		JSONArray linkArray = new JSONArray();
+		
+		Set<String> nodeName = new HashSet<>();
+		
+		
+		Set<JSONObject> linkSet = new HashSet<>();
+		for(History member : history) {
+			nodeName.add(member.getFromId());
+			nodeName.add(member.getToId());
+		}
+		
+		List<String> memberList = new ArrayList<>(nodeName);
+		
+		int index = 0;
+		
+		for(String member: memberList) {
+			JSONObject node = new JSONObject();
+			node.put("deviceid", member);
+			
+			
+			nodeInfo.put(member, new NodeGraphInfo(index++, node));
+			nodeArray.add(node);
+		}
+		
+		for(History h: history) {
+			String toId = h.getToId();
+			String fromId = h.getFromId();
+			
+			JSONObject link = new JSONObject();
+			
+			link.put("source", nodeInfo.get(fromId).getIndex());
+			link.put("target", nodeInfo.get(toId).getIndex());
+			
+			
+			nodeInfo.get(toId).getNodeInfo().put("actiontype", h.getTrace());
+			nodeInfo.get(toId).getNodeInfo().put("timestamp", h.getReceivedTime());
+			nodeInfo.get(toId).getNodeInfo().put("actiontype", h.getTrace());
+			
+			//linkArray.add(link);
+			linkSet.add(link);
+		}
+		
+		for(JSONObject link: linkSet) {
+			linkArray.add(link);
+		}
+		
+		JSONObject result = new JSONObject();
+		
+		result.put("nodes", nodeArray);
+		result.put("links", linkArray);
+		
+		ret = result.toJSONString();
+		
+		System.out.println(ret);
 		
 		
 		return ret;

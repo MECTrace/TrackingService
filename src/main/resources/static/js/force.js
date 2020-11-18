@@ -66,21 +66,21 @@ function force() {
         recurse(root);
         return nodess;
     } 
-    var nodes = flatten(jsonData);
-    var links = d3.layout.tree().links(nodes);
+    //var nodes = flatten(jsonData);
+    //var links = d3.layout.tree().links(nodes);
 
     force
-        .nodes(nodes)
-        .links(links)
+        .nodes(jsonData2.nodes)
+        .links(jsonData2.links)
         .start();
 
     var link = svg.selectAll(".link")
-        .data(links)
+        .data(jsonData2.links)
         .enter().append("line")
         .attr("class", "link");
 
     var node = svg.selectAll(".node")
-        .data(nodes)
+        .data(jsonData2.nodes)
         .enter().append("g")
         .attr("class", "node")
         .call(force.drag)

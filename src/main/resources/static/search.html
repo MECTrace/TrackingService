@@ -4,9 +4,64 @@
 <head>
 	<meta charset="utf-8">
 	<link rel="stylesheet" href="css/basic.css" type="text/css">
-	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="js/url.js"></script>
+	<script type="text/javascript" src="js/dndTree.js"></script>
+	<script type="text/javascript" src="js/force.js"></script>
+
 	<script type="text/javascript" src="js/basic.js"></script>
+	
+	
+	<style type="text/css">
+		.node {
+			cursor: pointer;
+		}
+
+		.overlay {
+			background-color: #FFFFFF;
+		}
+
+
+		.node circle {
+			fill: #fff;
+			stroke: steelblue;
+			stroke-width: 1.5px;
+		}
+
+		.node rect {
+			fill: #fff;
+			stroke: steelblue;
+			stroke-width: 1.5px;
+		}
+
+		.node text {
+			font-size: 10px;
+			font-family: sans-serif;
+		}
+
+		.link {
+			fill: none;
+			stroke: #ccc;
+			stroke-width: 1.5px;
+		}
+
+		.templink {
+			fill: none;
+			stroke: red;
+			stroke-width: 3px;
+		}
+
+		.ghostCircle.show {
+			display: block;
+		}
+
+		.ghostCircle,
+		.activeDrag .ghostCircle {
+			display: none;
+		}
+	</style>
+	
 	<title>Tracking Management Service</title>
 </head>
 
@@ -46,64 +101,75 @@
 					<tr>
 						<td>Data Format:</td>
 						<td colspan="3" style="text-align: left">
-							<select id="dataformat-selectbox" name="dataFormat"  style="text-align-last: right">
+							<select id="dataformat-selectbox" name="dataFormat" style="text-align-last: right">
 							</select></td>
 					</tr>
 					<tr>
 						<td>Device ID:</td>
-						<td colspan="3" style="padding-right: 20px"><input name="deviceId" type="text" style="width: 100%" /></td>
+						<td colspan="3" style="padding-right: 20px"><input name="deviceId" type="text"
+								style="width: 100%" /></td>
 					</tr>
 					<tr>
 						<td>Device Model:</td>
-						<td colspan="3" style="padding-right: 20px"><input name="deviceModel" type="text" style="width: 100%" /></td>
+						<td colspan="3" style="padding-right: 20px"><input name="deviceModel" type="text"
+								style="width: 100%" /></td>
 					</tr>
 
 					<tr>
 						<td>Edge ID:</td>
-						<td colspan="3" style="padding-right: 20px"><input name="edgeId" type="text" style="width: 100%" /></td>
+						<td colspan="3" style="padding-right: 20px"><input name="edgeId" type="text"
+								style="width: 100%" /></td>
 					</tr>
 					<tr>
 						<td>Event Type: </td>
-						<td colspan="3" style="padding-right: 20px"><input name="eventType" type="text" style="width: 100%" /></td>
+						<td colspan="3" style="padding-right: 20px"><input name="eventType" type="text"
+								style="width: 100%" /></td>
 					</tr>
 
 					<tr>
 						<td colspan="4" style="text-align:right">
 							<button type="button" onclick="conditionalSearch()"> 검색</button>
-							<button type="button">Tracking</button>
+							<button type="button" onclick="conditionalTracking()">Tracking</button>
 						</td>
 					</tr>
 				</table>
 			</form>
-			
+
 			<table id="condition-search-result-table" style="border:1px solid black">
-			
-			<tr>
-			<th>Data ID</th>
-			<th>Timestamp</th>
-			<th>Data Format</th>
-			<th>Device ID</th>
-			<th>Device Model</th>
-			<th></th>
-			<th></th>
-			</tr>
-			
-			<tr>
-			<td>0x333</td>
-			<td>2020-11-12</td>
-			<td>JSON</td>
-			<td>device-1</td>
-			<td>RSU-v1.23</td>
-			<td><input type="button" value="상세보기"/></td>
-			<td><input type="button" value="다운로드"/></td>
-			</tr>
-			
-			
-			
+
+				<tr>
+					<th>Data ID</th>
+					<th>Timestamp</th>
+					<th>Data Format</th>
+					<th>Device ID</th>
+					<th>Device Model</th>
+					<th></th>
+					<th></th>
+				</tr>
+
+				<tr>
+					<td>0x333</td>
+					<td>2020-11-12</td>
+					<td>JSON</td>
+					<td>device-1</td>
+					<td>RSU-v1.23</td>
+					<td><input type="button" value="상세보기" /></td>
+					<td><input type="button" value="다운로드" /></td>
+				</tr>
+
+
+
 			</table>
-			
-			
-			
+
+			<div class="d3-graph">
+
+				<div id="force-div" style="width:900px;height:500px; display:block; border:1px solid black">
+					<div id="force-container">
+
+					</div>
+				</div>
+
+			</div>
 
 		</div>
 	</main>

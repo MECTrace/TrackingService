@@ -9,7 +9,7 @@
 	<script type="text/javascript" src="js/url.js"></script>
 	<script type="text/javascript" src="js/dndTree.js"></script>
 	<script type="text/javascript" src="js/force.js"></script>
-	
+
 	<script type="text/javascript" src="js/basic.js"></script>
 
 	<style type="text/css">
@@ -71,8 +71,7 @@
 	<div class="ps-header">Tracking Management Service</div>
 
 	<main>
-		<
-		<nav class="sidebar">
+		< <nav class="sidebar">
 			<ul class="sidebar-nav-container" id="sidebar-nav-container">
 				<li class="sidebar-nav-menu">Data Tracking</li>
 				<li class="sidebar-nav-item" id="index"><a href="index.html">Data ID Based</a></li>
@@ -85,99 +84,101 @@
 				<li class="sidebar-nav-item" id="storage"><a href="#">Data Storage</a></li>
 				<li class="sidebar-nav-item" id="traffic"><a href="#">Network Traffic</a></li>
 			</ul>
-		</nav>
+			</nav>
 
-		<div id="ps-content">
-			<div class="headline">Data ID Based Search</div>
-			<form>
-				<table class="user-data-table" style="width:900px; border: 1px solid black; margin-top:10px">
+			<div id="ps-content">
+				<div class="headline">Data ID Based Search</div>
+				<form>
+					<table class="user-data-table" style="width:900px; border: 1px solid black; margin-top:10px">
+						<tr>
+							<td>Data ID:</td>
+							<td><input type="text" id="dataIdText"></input></td>
+							<td><input type="file" name="file" value="첨부하기" id="uploadFile" onChange="upload()" /></td>
+							<td><button type="button" onClick="nodeDetail()">전송</button></td>
+						</tr>
+
+						<tr>
+							<td colspan="4" style="text-align: left" id="metaData">MetaData(0x..)</td>
+
+						</tr>
+					</table>
+				</form>
+				<table id="data-info" class="data-info"
+					style="margin:10px 0px 10px 0px; width:900px;  border-collapse:collapse; display:none;">
 					<tr>
-						<td>Data ID:</td>
-						<td><input type="text" id="dataIdText"></input></td>
-						<td><input type="file" name="file" value="첨부하기" id="uploadFile" onChange="upload()" /></td>
-						<td><button type="button" onClick="nodeDetail()">전송</button></td>
+						<td rowspan="3" class="data-info-header">Data Info.</td>
+						<td>Data ID</td>
+						<td id="dataId">0x3d9d...</td>
+					</tr>
+					<tr>
+						<td>timestamp</td>
+						<td id="timestamp">201022175335</td>
+					</tr>
+					<tr>
+						<td>Data Format</td>
+						<td id="dataFormat">NTCIP 1202</td>
 					</tr>
 
 					<tr>
-						<td colspan="4" style="text-align: left" id="metaData">MetaData(0x..)</td>
-
+						<td rowspan="4" class="data-info-header">Source Info.</td>
+						<td>Device ID</td>
+						<td id="deviceId">0xc093c...</td>
 					</tr>
+					<tr>
+						<td>Device Model</td>
+						<td>RSU-v1.23</td>
+					</tr>
+					<tr>
+						<td>Location</td>
+						<td>Static Location-1번 국도 37 전신주</td>
+					</tr>
+
+					<tr>
+						<td>Organization</td>
+						<td>KST 모빌리티</td>
+					</tr>
+
+					<tr>
+						<td rowspan="3" class="data-info-header">Distribution Info.</td>
+						<td>Security Level</td>
+						<td>S1</td>
+					</tr>
+					<tr>
+						<td>Frequency</td>
+						<td>F3</td>
+					</tr>
+					<tr>
+						<td>Available Policy</td>
+						<td>P1</td>
+					</tr>
+
 				</table>
-			</form>
-			<table id="data-info" class="data-info"
-				style="margin:10px 0px 10px 0px; width:900px;  border-collapse:collapse; display:none;">
-				<tr>
-					<td rowspan="3" class="data-info-header">Data Info.</td>
-					<td>Data ID</td>
-					<td id="dataId">0x3d9d...</td>
-				</tr>
-				<tr>
-					<td>timestamp</td>
-					<td id="timestamp">201022175335</td>
-				</tr>
-				<tr>
-					<td>Data Format</td>
-					<td id="dataFormat">NTCIP 1202</td>
-				</tr>
+				<div class="d3-graph">
 
-				<tr>
-					<td rowspan="4" class="data-info-header">Source Info.</td>
-					<td>Device ID</td>
-					<td id="deviceId">0xc093c...</td>
-				</tr>
-				<tr>
-					<td>Device Model</td>
-					<td>RSU-v1.23</td>
-				</tr>
-				<tr>
-					<td>Location</td>
-					<td>Static Location-1번 국도 37 전신주</td>
-				</tr>
+					<div id="tree-div" style="width:900px;height:500px; display:none; border:1px solid black">
+						<div id="tree-container">
 
-				<tr>
-					<td>Organization</td>
-					<td>KST 모빌리티</td>
-				</tr>
+						</div>
+						<div style="text-align-last: center;">
+							<button type="button">Tracking</button></td>
+						</div>
+					</div>
 
-				<tr>
-					<td rowspan="3" class="data-info-header">Distribution Info.</td>
-					<td>Security Level</td>
-					<td>S1</td>
-				</tr>
-				<tr>
-					<td>Frequency</td>
-					<td>F3</td>
-				</tr>
-				<tr>
-					<td>Available Policy</td>
-					<td>P1</td>
-				</tr>
+					<div id="force-div" style="width:900px;height:500px; display:block; border:1px solid black">
+						<div id="force-container">
 
-			</table>
-			<div class="d3-graph">
-
-				<div id="tree-div" style="width:900px;height:500px; display:none; border:1px solid black">
-					<div id="tree-container">
+						</div>
 
 					</div>
+
 					<div style="text-align-last: center;">
 						<button type="button">Tracking</button></td>
 					</div>
+
 				</div>
 
-				<div id="force-div" style="width:900px;height:500px; display:block; border:1px solid black">
-					<div id="force-container">
-
-					</div>
-					<div style="text-align-last: center;">
-						<button type="button">Tracking</button></td>
-					</div>
-				</div>
 
 			</div>
-
-
-		</div>
 	</main>
 
 

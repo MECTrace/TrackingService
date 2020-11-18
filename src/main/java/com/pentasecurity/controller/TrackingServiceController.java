@@ -59,6 +59,7 @@ public class TrackingServiceController {
 		
 		ret.put("total", data.size());
 		ret.put("result",data);
+		ret.put("tree", trackingServiceService.makeTreeForce(condition));
 		
 		return ret;
 	}
