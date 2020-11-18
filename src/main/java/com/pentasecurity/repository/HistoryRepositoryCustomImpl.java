@@ -5,12 +5,9 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -19,7 +16,6 @@ import org.springframework.util.StringUtils;
 
 import com.pentasecurity.dto.ConditionSearchDto;
 import com.pentasecurity.entity.History;
-import com.pentasecurity.entity.Master;
 
 @Repository
 public class HistoryRepositoryCustomImpl implements HistoryRepositoryCustom{
@@ -86,11 +82,14 @@ public class HistoryRepositoryCustomImpl implements HistoryRepositoryCustom{
 					
 					);		
 		}
-		res.add(cb.or(cb.equal(history.get("fromId"), condition.getDeviceId()),
-				cb.equal(history.get("fromId"), condition.getEdgeId()))
-					);
-		res.add(cb.equal(history.get("master").get("dataFormat"), condition.getDataFormat()));
-		
+		if(!StringUtils.isEmpty(condition.getDeviceId()) || !StringUtils.isEmpty(condition.getEdgeId())) {
+			res.add(cb.or(cb.equal(history.get("fromId"), condition.getDeviceId()),
+					cb.equal(history.get("fromId"), condition.getEdgeId()))
+						);
+		}
+		if(!StringUtils.isEmpty(condition.getDataFormat())) {
+			res.add(cb.equal(history.get("master").get("dataFormat"), condition.getDataFormat()));
+		}
 		/*
 		if(!StringUtils.isEmpty(condition.getDeviceId())) {
 			res.add(

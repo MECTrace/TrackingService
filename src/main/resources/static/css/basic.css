@@ -133,11 +133,11 @@ main {
 }
 
 
-#ps-content table {
+.user-data-table {
 	table-layout: fixed;
 }
 
-#ps-content table tr td {
+.user-data-table tr td {
 	border: 1px solid black;
 	padding: 5px;
 }
@@ -198,6 +198,19 @@ main {
 
 .sidebar td {
 	height: 65px;
+}
+
+.data-info tr td {
+	padding:10px;
+	border-collapse: collapse;
+	border: 1px solid #4C4C4C;
+}
+.data-info-header {
+	
+	
+	background:#d9d9d9;
+	text-align:center;
+	
 }
 
 .sidebar-menu {
@@ -314,4 +327,9 @@ main {
 }
 .selected {
 	background-color: #187FC4;
+}
+
+.d3-graph {
+	margin: 10px 0 10px 0;
+	padding:10px 0 10px 0;
 }

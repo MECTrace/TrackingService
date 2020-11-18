@@ -2,8 +2,6 @@ package com.pentasecurity.repository;
 
 import java.util.List;
 
-import javax.persistence.Tuple;
-
 import com.pentasecurity.dto.ConditionSearchDto;
 import com.pentasecurity.entity.History;
 

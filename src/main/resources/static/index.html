@@ -1,68 +1,77 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8">
-<link rel="stylesheet" href="css/basic.css" type="text/css">
-<script src="https://d3js.org/d3.v3.min.js"></script>
-<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script type="text/javascript" src="js/dndTree.js"></script>
-<script type="text/javascript" src="js/url.js"></script>
-<script type="text/javascript" src="js/basic.js"></script>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="css/basic.css" type="text/css">
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="js/url.js"></script>
+	<script type="text/javascript" src="js/dndTree.js"></script>
+	<script type="text/javascript" src="js/force.js"></script>
 
-<style type="text/css">
-  
-	.node {
-    cursor: pointer;
-  }
+	<script type="text/javascript" src="js/basic.js"></script>
 
-  .overlay{
-      background-color:#EEE;
-  }
-   
-  .node rect {
-    fill: #fff;
-    stroke: steelblue;
-    stroke-width: 1.5px;
-  }
-   
-  .node text {
-    font-size:10px; 
-    font-family:sans-serif;
-  }
-   
-  .link {
-    fill: none;
-    stroke: #ccc;
-    stroke-width: 1.5px;
-  }
+	<style type="text/css">
+		.node {
+			cursor: pointer;
+		}
 
-  .templink {
-    fill: none;
-    stroke: red;
-    stroke-width: 3px;
-  }
-
-  .ghostCircle.show{
-      display:block;
-  }
-
-  .ghostCircle, .activeDrag .ghostCircle{
-       display: none;
-  }
-
-</style>
+		.overlay {
+			background-color: #FFFFFF;
+		}
 
 
-<title>Tracking Management Service</title>
+		.node circle {
+			fill: #fff;
+			stroke: steelblue;
+			stroke-width: 1.5px;
+		}
+
+		.node rect {
+			fill: #fff;
+			stroke: steelblue;
+			stroke-width: 1.5px;
+		}
+
+		.node text {
+			font-size: 10px;
+			font-family: sans-serif;
+		}
+
+		.link {
+			fill: none;
+			stroke: #ccc;
+			stroke-width: 1.5px;
+		}
+
+		.templink {
+			fill: none;
+			stroke: red;
+			stroke-width: 3px;
+		}
+
+		.ghostCircle.show {
+			display: block;
+		}
+
+		.ghostCircle,
+		.activeDrag .ghostCircle {
+			display: none;
+		}
+	</style>
+
+
+	<title>Tracking Management Service</title>
 </head>
+
 <body>
-	<input type="hidden" id="parentRegnumber" />
+	<input type="hidden" id="selected-node" />
 
 	<div class="ps-header">Tracking Management Service</div>
 
 	<main>
-
-		<nav class="sidebar">
+		< <nav class="sidebar">
 			<ul class="sidebar-nav-container" id="sidebar-nav-container">
 				<li class="sidebar-nav-menu">Data Tracking</li>
 				<li class="sidebar-nav-item" id="index"><a href="index.html">Data ID Based</a></li>
@@ -75,29 +84,30 @@
 				<li class="sidebar-nav-item" id="storage"><a href="#">Data Storage</a></li>
 				<li class="sidebar-nav-item" id="traffic"><a href="#">Network Traffic</a></li>
 			</ul>
-		</nav>
+			</nav>
 
+			<div id="ps-content">
+				<div class="headline">Data ID Based Search</div>
+				<form>
+					<table class="user-data-table" style="width:900px; border: 1px solid black; margin-top:10px">
+						<tr>
+							<td>Data ID:</td>
+							<td><input type="text" id="dataIdText"></input></td>
+							<td><input type="file" name="file" value="첨부하기" id="uploadFile" onChange="upload()" /></td>
+							<td><button type="button" onClick="nodeDetail()">전송</button></td>
+						</tr>
 
-		<div id="ps-content">
-			<div class="headline">Tracking Management Service</div>
-			<form >
-				<table style="border: 1px solid black; margin-top:10px">
+						<tr>
+							<td colspan="4" style="text-align: left" id="metaData">MetaData(0x..)</td>
+
+						</tr>
+					</table>
+				</form>
+				<table id="data-info" class="data-info"
+					style="margin:10px 0px 10px 0px; width:900px;  border-collapse:collapse; display:none;">
 					<tr>
-						<td>Data ID:</td>
-						<td><input type="text" id="dataIdText"></input></td>
-						<td><input type="file" name="file" value="첨부하기" id="uploadFile" onChange="upload()" /></td>
-						<td><button type="button">전송</button></td>
-					</tr>
-
-					<tr>
-						<td colspan="4" style="text-align: left" id="metaData">MetaData(0x..)</td>
-
-					</tr>
-				</table>
-				<table style="border:1px solid black; border-collapse:collapse">
-					<tr>
-						<td rowspan="3">Data Info.</td>
-						<td >Data ID</td>
+						<td rowspan="3" class="data-info-header">Data Info.</td>
+						<td>Data ID</td>
 						<td id="dataId">0x3d9d...</td>
 					</tr>
 					<tr>
@@ -110,7 +120,7 @@
 					</tr>
 
 					<tr>
-						<td rowspan="4">Source Info.</td>
+						<td rowspan="4" class="data-info-header">Source Info.</td>
 						<td>Device ID</td>
 						<td id="deviceId">0xc093c...</td>
 					</tr>
@@ -129,7 +139,7 @@
 					</tr>
 
 					<tr>
-						<td rowspan="3">Distribution Info.</td>
+						<td rowspan="3" class="data-info-header">Distribution Info.</td>
 						<td>Security Level</td>
 						<td>S1</td>
 					</tr>
@@ -141,19 +151,34 @@
 						<td>Available Policy</td>
 						<td>P1</td>
 					</tr>
-					
+
 				</table>
-			</form>
-				<div id="tree-div" style="width:1000px;height:300px">
-					<div id="tree-container">
-					
+				<div class="d3-graph">
+
+					<div id="tree-div" style="width:900px;height:500px; display:none; border:1px solid black">
+						<div id="tree-container">
+
+						</div>
+						<div style="text-align-last: center;">
+							<button type="button">Tracking</button></td>
+						</div>
 					</div>
+
+					<div id="force-div" style="width:900px;height:500px; display:block; border:1px solid black">
+						<div id="force-container">
+
+						</div>
+
+					</div>
+
+					<div style="text-align-last: center;">
+						<button type="button">Tracking</button></td>
+					</div>
+
 				</div>
 
-				<button type="button">Tracking</button></td>
-	
 
-		</div>
+			</div>
 	</main>
 
 

@@ -3,6 +3,7 @@ package com.pentasecurity.entity;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -25,7 +26,7 @@ public class History {
 	private String trace;
 	private String receivedTime;
 	
-	@OneToOne(cascade=(CascadeType.ALL))
+	@OneToOne(fetch=(FetchType.LAZY), cascade=(CascadeType.ALL))
 	@JoinColumn(name="data_id", insertable=false, updatable=false)
 	private Master master;
 	
