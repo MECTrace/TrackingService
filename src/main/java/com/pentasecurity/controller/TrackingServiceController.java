@@ -55,14 +55,14 @@ public class TrackingServiceController {
 		Map<String, Object> ret = new HashMap<>();
 		
 		
-		List<HistoryDto> data = trackingServiceService.conditionalSearch(condition);
-		
-		ret.put("total", data.size());
-		ret.put("result",data);
-		ret.put("tree", trackingServiceService.makeTreeForce(condition));
+		List<History> data = trackingServiceService.conditionalSearch(condition);
+		List<HistoryDto> list = trackingServiceService.wrappingDto(data);
+		ret.put("total", list.size());
+		ret.put("result",list);
+		ret.put("tree", trackingServiceService.makeTreeForce(data, condition.getDeviceId(), condition.getEdgeId()));
 		
 		return ret;
-	}
+	} 
 	
 	@PostMapping("/upload")
 	private Map<String, Object> uploadFile(@RequestParam("file") MultipartFile multipartFile) {

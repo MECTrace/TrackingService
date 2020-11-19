@@ -1,5 +1,7 @@
 package com.pentasecurity.service;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +14,8 @@ import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import com.pentasecurity.dto.ConditionSearchDto;
@@ -40,7 +44,7 @@ public class TrackingServiceService {
 	public List<History> searchForDataid(String dataId) {
 		//List<String> ret = new ArrayList<>();
 		List<History> ret = historyRepository.findByDataId(dataId);
-		tree(ret, getMasterTable(dataId));
+		//tree(ret, getMasterTable(dataId));
 		
 		return ret;
 	}
@@ -52,7 +56,7 @@ public class TrackingServiceService {
 	
 	public String getTreeForce(String dataId) {
 		List<History> ret = historyRepository.findByDataId(dataId);
-		return treeForce(ret);
+		return treeForce(ret,"","");
 	}
 	
 	public List<History> searchAll() {
@@ -103,29 +107,73 @@ public class TrackingServiceService {
 		return codeRepository.findAll();
 	}
 	
-	public List<HistoryDto> conditionalSearch(ConditionSearchDto condition) {
-				
-		List<History> history = historyRepository.findByConditional(condition);
-		
-		treeForce(history);
-		
+	public List<HistoryDto> wrappingDto(List<History> list){
 		List<HistoryDto> historyDto = new ArrayList<>();
 		
-		for(History h : history) {
+		for(History h : list) {
 			historyDto.add(new HistoryDto(h));
 		}
 		
 		return historyDto;	
 	}
 	
-	public String makeTreeForce(ConditionSearchDto condition) {
-		String ret = null;
-		List<History> history = historyRepository.findByConditional(condition);
+	public List<History> conditionalSearch(ConditionSearchDto condition) {
 		
-		ret = treeForce(history);
+		long start = System.currentTimeMillis();
+		List<History> conditionHistory = conditionalSearchHistory(condition);
+		//treeForce(history);
+		
+		long end = System.currentTimeMillis();
+		
+		System.out.println("conditionalSearch : " + (end - start));
+		
+		return conditionHistory;	
+	}
+	
+	
+	public String makeTreeForce(List<History> history, String deviceId, String edgeId) {
+		String ret = null;
+		
+		long start = System.currentTimeMillis();
+		 
+		ret = treeForce(history, deviceId, edgeId);
+		
+		
+		long end = System.currentTimeMillis();
+		
+		System.out.println("makeTreeForce : " + (end - start));
 		
 		
 		return ret;
+	}
+	
+	private List<History> conditionalSearchHistory(ConditionSearchDto condition){
+		
+		
+		long start = System.currentTimeMillis();
+		
+		List<History> history = historyRepository.findByConditional(condition);
+		
+		long end = System.currentTimeMillis();
+		
+		System.out.println("findByConditional : " + (end - start));
+		
+		start = System.currentTimeMillis();
+		
+		List<History> conditionHistory = new ArrayList<>();
+		
+		Set<String> set = history.stream()
+				.map(h -> h.getDataId())
+				.collect(toSet());
+
+		List<String> dataIdList = new ArrayList<>(set);
+		
+		conditionHistory.addAll(historyRepository.findAllByDataIdIn(dataIdList));
+		
+		end = System.currentTimeMillis();
+		System.out.println("conditionHistory.addAll(searchForDataid(s)) : " + (end - start));
+		
+		return conditionHistory;
 	}
 	
 	private String encrypt(String s, String messageDigest) {
@@ -204,8 +252,8 @@ public class TrackingServiceService {
 			nodeObject.put("children", nodeArray);
 		}
 
-		System.out.println(treeNode.get(firstNode.getFromId()).toString());
-		System.out.println(treeNode.get(firstNode.getFromId()).toJSONString());
+		//System.out.println(treeNode.get(firstNode.getFromId()).toString());
+		//System.out.println(treeNode.get(firstNode.getFromId()).toJSONString());
 		ret = treeNode.get(firstNode.getFromId()).toJSONString();
 		
 		return ret;
@@ -255,7 +303,7 @@ public class TrackingServiceService {
 	
 	*/
 	@SuppressWarnings("unchecked")
-	private String treeForce(List<History> history) {
+	private String treeForce(List<History> history, String device, String edge) {
 		String ret ="";
 		
 		
@@ -264,26 +312,50 @@ public class TrackingServiceService {
 		JSONArray linkArray = new JSONArray();
 		
 		Set<String> nodeName = new HashSet<>();
+		Set<String> toIdSet;
+		Set<String> fromIdSet;
 		
+		toIdSet = history.stream().map(h -> h.getToId()).collect(toSet());
+		fromIdSet = history.stream().map(h -> h.getFromId()).collect(toSet());
+		
+		nodeName.addAll(toIdSet);
+		nodeName.addAll(fromIdSet);
 		
 		Set<JSONObject> linkSet = new HashSet<>();
-		for(History member : history) {
-			nodeName.add(member.getFromId());
-			nodeName.add(member.getToId());
-		}
 		
 		List<String> memberList = new ArrayList<>(nodeName);
+		
+		
 		
 		int index = 0;
 		
 		for(String member: memberList) {
 			JSONObject node = new JSONObject();
 			node.put("deviceid", member);
+			node.put("count", 0);
 			
+			if(member.equals(edge))
+				node.put("color","#ed7c31");
+			else if(member.equals(device))
+				node.put("color","#fbc280");
+			else if(member.equals("central cloud"))
+				node.put("color","#405275");
+			else 
+				node.put("color","#d9d9d9");
 			
 			nodeInfo.put(member, new NodeGraphInfo(index++, node));
 			nodeArray.add(node);
 		}
+		
+		int cloudIndex = index;
+		
+		JSONObject cloud = new JSONObject();
+		cloud.put("deviceid", "central cloud");
+		cloud.put("color","#405275");
+		nodeInfo.put("central cloud", new NodeGraphInfo(cloudIndex, cloud));
+		
+		nodeArray.add(cloud);
+		
 		
 		for(History h: history) {
 			String toId = h.getToId();
@@ -294,14 +366,50 @@ public class TrackingServiceService {
 			link.put("source", nodeInfo.get(fromId).getIndex());
 			link.put("target", nodeInfo.get(toId).getIndex());
 			
+			if(h.getFromType().contains("device")) {
+				JSONObject cloudLink = new JSONObject();
+				
+				cloudLink.put("source", nodeInfo.get(toId).getIndex());
+				cloudLink.put("target", cloudIndex);
+				cloudLink.put("color", "#ed7c31");
+				linkSet.add(cloudLink);
+			}
 			
-			nodeInfo.get(toId).getNodeInfo().put("actiontype", h.getTrace());
-			nodeInfo.get(toId).getNodeInfo().put("timestamp", h.getReceivedTime());
-			nodeInfo.get(toId).getNodeInfo().put("actiontype", h.getTrace());
+			JSONObject from = nodeInfo.get(fromId).getNodeInfo();
+			JSONObject to = nodeInfo.get(toId).getNodeInfo();
+			
+			int count = (int)to.get("count");
+			 
+			from.put("devicetype", h.getFromType());
+			
+			to.put("devicetype", h.getToType());
+			to.put("actiontype", h.getTrace());
+			to.put("timestamp", h.getReceivedTime());
+			to.put("actiontype", h.getTrace());
+			to.put("count", count + 1);
+			
+			
+			if(fromId.equals(edge)) {
+				to.put("color", "#0070C0");
+				//link.put("color", "#ed7c31");
+				link.put("color", "#0070C0");
+			}
+			else link.put("color", "#d9d9d9");
+			
+			if(fromId.equals(device)) {
+				link.put("color", "#ed7c31");
+			}
+			////////////////////////////////// line color
+			
+			
+			
 			
 			//linkArray.add(link);
 			linkSet.add(link);
+			//linkArray.
 		}
+		
+		
 		
 		for(JSONObject link: linkSet) {
 			linkArray.add(link);

@@ -45,7 +45,16 @@ function force() {
             return "#405275";
         }
     };
-
+    
+    var lineColor = function(group) {
+    	 if (group == "edge") {
+             return "red";
+         } else if (group == "device") {
+             return "#fbc280";
+         } else {
+             return "#405275";
+         }
+    };
 
     //var nodes = [];
     //var links = [];
@@ -77,6 +86,11 @@ function force() {
     var link = svg.selectAll(".link")
         .data(jsonData2.links)
         .enter().append("line")
+        .style("stroke", function(d) {
+            //return d.actiontype == "delete" ? "red" : "steelblue";
+        	//return lineColor(d.devicetype);
+        	return d.color;
+        })
         .attr("class", "link");
 
     var node = svg.selectAll(".node")
@@ -85,15 +99,29 @@ function force() {
         .attr("class", "node")
         .call(force.drag)
         .on('click', click);
-    node.append('circle')
+    
+    /*node.append('circle')
         .attr('r', 20)
         .style("stroke", function(d) {
-            return d.actiontype == "delete" ? "red" : "steelblue";
+            //return d.actiontype == "delete" ? "red" : "steelblue";
+        	return color(d.devicetype);
         })
         .attr('fill', function (d) {
             return color(d.devicetype);
         });
-
+*/
+    node.append('circle')
+    .attr('r', 20)
+    .style("stroke", function(d) {
+        //return d.actiontype == "delete" ? "red" : "steelblue";
+    	return d.color;
+    })
+    .attr('fill', function(d) {
+        //return d.actiontype == "delete" ? "red" : "steelblue";
+    	return d.color;
+    });
+    
+    
     node.append("text")
         .attr("dx", 0)
         .attr("dy", 30)

@@ -12,5 +12,6 @@ public interface HistoryRepository extends JpaRepository<History, Integer>, Hist
 	List<History> findByFromIdAndDataId(String fromId, String dataId);
 	List<History> findByToIdAndDataId(String fromId, String dataId);
 	
+	List<History> findAllByDataIdIn(List<String> dataId);
 
 }

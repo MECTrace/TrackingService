@@ -58,7 +58,7 @@ function fileDetail(data) {
 	deviceId.innerHTML = data["deviceId"];
 	
 	treeData = JSON.parse(data["tree"]);
-	jsonData = JSON.parse(data["treeForce"]);
+	jsonData2 = JSON.parse(data["treeForce"]);
 	
 	console.log(JSON.parse(data["treeForce"]));
 	viewTree();
