@@ -56,7 +56,7 @@ public class TrackingServiceService {
 	
 	public String getTreeForce(String dataId) {
 		List<History> ret = historyRepository.findByDataId(dataId);
-		return treeForce(ret,"","");
+		return treeForce(ret,"","" , false);
 	}
 	
 	public List<History> searchAll() {
@@ -71,7 +71,7 @@ public class TrackingServiceService {
 		
 		ret = encrypt(content, "SHA-256");
 		
-		System.out.println(ret);
+		//System.out.println(ret);
 		
 		return ret;
 	}
@@ -92,6 +92,14 @@ public class TrackingServiceService {
 		return ret;
 	}
 	
+	public String getData(String dataId) {
+		String ret = "";
+		Master master = masterRepository.findById(dataId).orElse(null);
+		if(master != null) { 
+			ret = master.getData();
+		}
+		return ret;
+	}
 	public MasterDto getMasterTable(String dataId) {
 		Master master = masterRepository.findById(dataId).orElse(null);
 		
@@ -136,7 +144,7 @@ public class TrackingServiceService {
 		
 		long start = System.currentTimeMillis();
 		 
-		ret = treeForce(history, deviceId, edgeId);
+		ret = treeForce(history, deviceId, edgeId, true);
 		
 		
 		long end = System.currentTimeMillis();
@@ -303,9 +311,15 @@ public class TrackingServiceService {
 	
 	*/
 	@SuppressWarnings("unchecked")
-	private String treeForce(List<History> history, String device, String edge) {
+	private String treeForce(List<History> history, String device, String edge, boolean isCondition) {
 		String ret ="";
 		
+		boolean isDeviceIdEmpty = false;
+		boolean isEdgeIdEmpty = false;
+		if(device.equals(""))
+			isDeviceIdEmpty = true;
+		if(edge.equals(""))
+			isEdgeIdEmpty = true;
 		
 		Map<String, NodeGraphInfo> nodeInfo = new HashMap<>();
 		JSONArray nodeArray = new JSONArray();
@@ -326,8 +340,9 @@ public class TrackingServiceService {
 		List<String> memberList = new ArrayList<>(nodeName);
 		
 		
-		
 		int index = 0;
+		
+		
 		
 		for(String member: memberList) {
 			JSONObject node = new JSONObject();
@@ -335,23 +350,39 @@ public class TrackingServiceService {
 			node.put("count", 0);
 			
 			if(member.equals(edge))
-				node.put("color","#ed7c31");
+				node.put("color","#ed7c31");  // 주황
 			else if(member.equals(device))
-				node.put("color","#fbc280");
+				node.put("color","#fbc280"); // 연주황
 			else if(member.equals("central cloud"))
-				node.put("color","#405275");
+				node.put("color","#405275");  // 검파랑
 			else 
-				node.put("color","#d9d9d9");
+				node.put("color","#d9d9d9"); // 회색
 			
+			if(isDeviceIdEmpty) {
+				if(member.contains("device"))
+					node.put("color","#fbc280"); // 연주황
+			}
+			
+			if(isEdgeIdEmpty) {
+				if(member.contains("edge"))
+					node.put("color","#ed7c31"); //주황
+			}
+			
+			
+			node.put("isCondition", isCondition);
 			nodeInfo.put(member, new NodeGraphInfo(index++, node));
 			nodeArray.add(node);
 		}
+		
+		
 		
 		int cloudIndex = index;
 		
 		JSONObject cloud = new JSONObject();
 		cloud.put("deviceid", "central cloud");
 		cloud.put("color","#405275");
+		cloud.put("count", 0);
+		cloud.put("isCondition", isCondition);
 		nodeInfo.put("central cloud", new NodeGraphInfo(cloudIndex, cloud));
 		
 		nodeArray.add(cloud);
@@ -369,16 +400,18 @@ public class TrackingServiceService {
 			if(h.getFromType().contains("device")) {
 				JSONObject cloudLink = new JSONObject();
 				
+				
 				cloudLink.put("source", nodeInfo.get(toId).getIndex());
 				cloudLink.put("target", cloudIndex);
 				cloudLink.put("color", "#ed7c31");
+				
 				linkSet.add(cloudLink);
 			}
 			
 			JSONObject from = nodeInfo.get(fromId).getNodeInfo();
 			JSONObject to = nodeInfo.get(toId).getNodeInfo();
 			
-			int count = (int)to.get("count");
+			int toCount = (int)to.get("count");
 			 
 			from.put("devicetype", h.getFromType());
 			
@@ -386,22 +419,26 @@ public class TrackingServiceService {
 			to.put("actiontype", h.getTrace());
 			to.put("timestamp", h.getReceivedTime());
 			to.put("actiontype", h.getTrace());
-			to.put("count", count + 1);
+			to.put("count", toCount + 1);
+			
 			
 			
 			if(fromId.equals(edge)) {
-				to.put("color", "#0070C0");
+				to.put("color", "#0070C0"); // 파랑
 				//link.put("color", "#ed7c31");
-				link.put("color", "#0070C0");
+				link.put("color", "#0070C0");  // 파랑
 			}
 			else link.put("color", "#d9d9d9");
 			
-			if(fromId.equals(device)) {
+			if(fromId.equals(device) || (isDeviceIdEmpty && h.getFromType().contains("device"))) {
+				int deviceCount = (int)from.get("count");
+				int cloudCount = (int)cloud.get("count");
+				
+				from.put("count", deviceCount + 1);
+				
+				cloud.put("count", cloudCount + 1);
 				link.put("color", "#ed7c31");
 			}
-			////////////////////////////////// line color
-			
-			
 			
 			
 			//linkArray.add(link);
@@ -422,7 +459,7 @@ public class TrackingServiceService {
 		
 		ret = result.toJSONString();
 		
-		System.out.println(ret);
+		//System.out.println(ret);
 		
 		
 		return ret;

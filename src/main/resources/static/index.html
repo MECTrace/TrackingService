@@ -23,8 +23,8 @@
 
 
 		.node circle {
-			fill: #fff;
-			stroke: steelblue;
+			
+			
 			stroke-width: 1.5px;
 		}
 
@@ -65,13 +65,14 @@
 	<title>Tracking Management Service</title>
 </head>
 
-<body>
-	<input type="hidden" id="selected-node" />
+<body onload='loadDataId()'>
+	
 
 	<div class="ps-header">Tracking Management Service</div>
 
 	<main>
-		< <nav class="sidebar">
+	<input type="hidden" id="selected-node" />
+		 <nav class="sidebar">
 			<ul class="sidebar-nav-container" id="sidebar-nav-container">
 				<li class="sidebar-nav-menu">Data Tracking</li>
 				<li class="sidebar-nav-item" id="index"><a href="index.html">Data ID Based</a></li>
@@ -159,23 +160,19 @@
 						<div id="tree-container">
 
 						</div>
-						<div style="text-align-last: center;">
-							<button type="button">Tracking</button></td>
-						</div>
 					</div>
 
-					<div id="force-div" style="width:900px;height:500px; display:block; border:1px solid black">
+					<div id="force-div" style="width:900px;height:500px; display:none; border:1px solid black">
 						<div id="force-container">
 
 						</div>
 
 					</div>
-
-					<div style="text-align-last: center;">
-						<button type="button">Tracking</button></td>
-					</div>
-
 				</div>
+				
+				<div style="width:900px;height:500px; text-align-last: center;">
+						<button type="button" id="tracking-btn" onClick="tracking()" style="width:120px">Tracking</button></td>
+					</div>
 
 
 			</div>

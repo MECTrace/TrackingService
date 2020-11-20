@@ -10,9 +10,17 @@ function nodeDetail() {
 function detail(d) {
 	
 	var openWin;
-	document.getElementById("selected-node").value = d["deviceid"];
-	openWin = window.open("nodeDetail.html",
-            "nodeDetail", "width=1300px, height=600, resizable=no, scrollbars=no, toolbars=no, menubar=no");
+	if(d.isCondition == false) {
+		
+		document.getElementById("selected-node").value = d["deviceid"];
+		openWin = window.open("nodeDetail.html",
+				"nodeDetail", "width=1300px, height=600, resizable=no, scrollbars=no, toolbars=no, menubar=no");
+	}
+	else {
+		
+		openWin = window.open("conditionNodeDetail.html",
+				"conditionNodeDetail", "width=1580px, height=600, resizable=no, scrollbars=no, toolbars=no, menubar=no");
+	}
 }
 
 
@@ -46,14 +54,10 @@ function force() {
         }
     };
     
-    var lineColor = function(group) {
-    	 if (group == "edge") {
-             return "red";
-         } else if (group == "device") {
-             return "#fbc280";
-         } else {
-             return "#405275";
-         }
+    var isCondition = function(d) {
+    	 if (d.isCondition == true) 
+             return d.count;
+         else return ""; 
     };
 
     //var nodes = [];
@@ -111,7 +115,7 @@ function force() {
         });
 */
     node.append('circle')
-    .attr('r', 20)
+    .attr('r', 25)
     .style("stroke", function(d) {
         //return d.actiontype == "delete" ? "red" : "steelblue";
     	return d.color;
@@ -124,13 +128,24 @@ function force() {
     
     node.append("text")
         .attr("dx", 0)
-        .attr("dy", 30)
+        .attr("dy", 37)
         .style("font-family", "overwatch")
         .style("font-size", "12px") 
         .attr("text-anchor", "middle")
         .text(function (d) {
             return d.deviceid;
         });
+    
+    node.append("text")
+    .attr("dx", 0)
+    .attr("dy", 5)
+    .style("font-family", "overwatch")
+    .style("font-size", "20px") 
+    .style("fill","white")
+    .attr("text-anchor", "middle")
+    .text(function (d) {
+        return isCondition(d);
+    });
 
     force.on("tick", function () {
         link.attr("x1", function (d) {
