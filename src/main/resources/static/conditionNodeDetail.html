@@ -5,87 +5,119 @@
 	<link rel="stylesheet" href="css/basic.css" type="text/css">
 	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="js/url.js"></script>
-	
+	<script type="text/javascript" src="js/basic.js"></script>
+
 	<meta charset="utf-8">
-	
+
 	<script type="text/javascript">
 
-	function loadConditionNodeDetail() {
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function () {
-			if (this.readyState == 4 && this.status == 200) {
-				var response = JSON.parse(this.responseText);
+		function loadData() {
 
+			var data = opener.tableResult;
+			var selectedNode = opener.document.getElementById("selected-node").value;
+			console.log(data);
 
-				var title = document.getElementById("node-title");
-				var dataId = document.getElementById("dataId");
-				var timestamp = document.getElementById("timestamp");
-				var dataFormat = document.getElementById("dataFormat");
-				var deviceId = document.getElementById("deviceId");
+			searchResult(data, selectedNode);
 
-				title.innerHTML = selectedNode;
-				dataId.innerHTML = response["dataId"];
-				timestamp.innerHTML = response["timestamp"];
-				dataFormat.innerHTML = response["dataFormat"];
-				deviceId.innerHTML = response["deviceId"];
+		}
+		function searchResult(data, selectedNode) {
+			let length = data.length;
 
-				var table = document.getElementById("info-table");
-				setTable(table, response["result"]);
+			var table = document.getElementById("condition-search-result-table-detail");
+			listReset(table);
+			for (var i = 0; i < length; i++) {
+				if (data[i].fromId == selectedNode || data[i].toId == selectedNode) {
+					var elementList = table.insertRow();
+					var cell = elementList.insertCell();
+
+					cell.innerHTML = data[i].dataId;
+
+					cell = elementList.insertCell();
+					cell.innerHTML = data[i].receivedTime;
+					//cell.align = "left";
+
+					cell = elementList.insertCell();
+					cell.innerHTML = data[i].dataFormat;
+					cell.align = "center";
+					
+					cell = elementList.insertCell();
+					cell.innerHTML = "RSU...";
+					cell.align = "center";
+
+					cell = elementList.insertCell();
+					cell.innerHTML = "S1";
+					cell.align = "center";
+					
+					cell = elementList.insertCell();
+					cell.innerHTML = "F1";
+					cell.align = "center";
+					
+					cell = elementList.insertCell();
+					cell.innerHTML = "P1";
+					cell.align = "center";
+					
+					cell = elementList.insertCell();
+					cell.innerHTML = data[i].fromId;
+					cell.align = "center";
+
+					cell = elementList.insertCell();
+					cell.innerHTML = data[i].toId;
+					cell.align = "center";
+
+					cell = elementList.insertCell();
+					cell.innerHTML = "<button type='button' onclick=detailDataId('" + data[i].dataId + "')>상세보기</button>";
+					cell.align = "center";
+
+					cell = elementList.insertCell();
+					cell.innerHTML = "<button href='#' type='button'>다운로드</button>";
+					cell.align = "center";
+				}
 
 			}
-		};
 
-		selectedNode = opener.document.getElementById("selected-node").value;
-		dataId = opener.document.getElementById("dataIdText").value;
-		xhttp.open("GET", loadUri + "/nodetrace?nodeName=" + selectedNode + "&dataId=" + dataId);
-
-		xhttp.send();
-
-
-	}
-
+		}
 	</script>
-	
+
 </head>
 
-<body >
-	
+<body onload='loadData()'>
+
 	<div align="center">
 
-	<table class='table-header' id="condition-search-result-table"
-		style="border:1px solid black; margin-top:10px;">
+		<table class='data-info' id="condition-search-result-table-detail" style="border:1px solid black; margin-top:10px;">
 
-		<tr>
-			<th>Data ID</th>
-			<th>Timestamp</th>
-			<th>Data Format</th>
-			<th>Device Info</th>
-			<th>Security Level</th>
-			<th>Frequency</th>
-			<th>Availability Policy</th>
-			<th>Source ID</th>
-			<th></th>
-			<th></th>
-		</tr>
+			<tr>
+				<th>Data ID</th>
+				<th>Timestamp</th>
+				<th>Data Format</th>
+				<th>Device Info</th>
+				<th>Security Level</th>
+				<th>Frequency</th>
+				<th>Availability Policy</th>
+				<th>From ID</th>
+				<th>To ID</th>
+				<th></th>
+				<th></th>
+			</tr>
 
-		<tr>
-			<td>0x333</td>
-			<td>2020-11-12</td>
-			<td>JSON</td>
-			<td>RSU-v1.23</td>
-			<td>S1</td>
-			<td>F1</td>
-			<td>P1</td>
-			<td>0x123123</td>
-			<td><button type="button">상세보기</button></td>
-			<td><button type="button">다운로드 </button></td>
-		</tr>
+			<tr>
+				<td>0x333</td>
+				<td>2020-11-12</td>
+				<td>JSON</td>
+				<td>RSU-v1.23</td>
+				<td>S1</td>
+				<td>F1</td>
+				<td>P1</td>
+				<td>0x123123</td>
+				<td><button type="button">상세보기</button></td>
+				<td><button type="button">다운로드 </button></td>
+			</tr>
 
 
 
-	</table>
+		</table>
 
-</div>
+	</div>
 </body>
 
 </html>

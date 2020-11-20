@@ -11,7 +11,10 @@
 	<script type="text/javascript" src="js/force.js"></script>
 
 	<script type="text/javascript" src="js/basic.js"></script>
+	<script type="text/javascript">
 	
+	var tableResult;
+	</script>
 	
 	<style type="text/css">
 		.node {
@@ -70,7 +73,7 @@
 	<div class="ps-header">Tracking Management Service</div>
 
 	<main>
-
+	<input type="hidden" id="selected-node" />
 		<nav class="sidebar">
 			<ul class="sidebar-nav-container" id="sidebar-nav-container">
 				<li class="sidebar-nav-menu">Data Tracking</li>
@@ -140,8 +143,8 @@
 					<th>Data ID</th>
 					<th>Timestamp</th>
 					<th>Data Format</th>
-					<th>Device ID</th>
-					<th>Device Model</th>
+					<th>From ID</th>
+					<th>To Id</th>
 					<th></th>
 					<th></th>
 				</tr>

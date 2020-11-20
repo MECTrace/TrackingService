@@ -17,7 +17,7 @@ function detail(d) {
 				"nodeDetail", "width=1300px, height=600, resizable=no, scrollbars=no, toolbars=no, menubar=no");
 	}
 	else {
-		
+		document.getElementById("selected-node").value = d["deviceid"];
 		openWin = window.open("conditionNodeDetail.html",
 				"conditionNodeDetail", "width=1580px, height=600, resizable=no, scrollbars=no, toolbars=no, menubar=no");
 	}
