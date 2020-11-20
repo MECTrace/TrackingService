@@ -24,7 +24,6 @@
 
 
 		.node circle {
-			fill: #fff;
 			stroke: steelblue;
 			stroke-width: 1.5px;
 		}
@@ -42,7 +41,7 @@
 
 		.link {
 			fill: none;
-			stroke: #ccc;
+			
 			stroke-width: 1.5px;
 		}
 
@@ -90,38 +89,38 @@
 
 		<div id="ps-content">
 			<div class="headline">Conditional Based Search</div>
-			<form id="search-form" enctype="application/json">
+			<form class="data-info" id="search-form" enctype="application/json">
 				<table style="border: 1px solid black; margin-top: 10px">
 					<tr>
-						<td>Time Stamp:</td>
+						<td class="data-info-header">Time Stamp:</td>
 						<td><input type="text" name="timeStampStart" value="2020-11-12 19:00:00"></td>
 						<td>~</td>
 						<td><input type="text" name="timeStampEnd" value="2020-11-14 19:00:00"></td>
 					</tr>
 					<tr>
-						<td>Data Format:</td>
+						<td class="data-info-header">Data Format:</td>
 						<td colspan="3" style="text-align: left">
 							<select id="dataformat-selectbox" name="dataFormat" style="text-align-last: right">
 							</select></td>
 					</tr>
 					<tr>
-						<td>Device ID:</td>
-						<td colspan="3" style="padding-right: 20px"><input name="deviceId" type="text"
+						<td class="data-info-header">Device ID:</td>
+						<td colspan="3" style="padding-right: 20px"><input name="deviceId" type="text" value="device-1"
 								style="width: 100%" /></td>
 					</tr>
 					<tr>
-						<td>Device Model:</td>
-						<td colspan="3" style="padding-right: 20px"><input name="deviceModel" type="text"
+						<td class="data-info-header">Device Model:</td>
+						<td colspan="3" style="padding-right: 20px"><input name="deviceModel" type="text" 
 								style="width: 100%" /></td>
 					</tr>
 
 					<tr>
-						<td>Edge ID:</td>
-						<td colspan="3" style="padding-right: 20px"><input name="edgeId" type="text"
+						<td class="data-info-header">Edge ID:</td>
+						<td colspan="3" style="padding-right: 20px"><input name="edgeId" type="text" value="edge-1"
 								style="width: 100%" /></td>
 					</tr>
 					<tr>
-						<td>Event Type: </td>
+						<td class="data-info-header">Event Type: </td>
 						<td colspan="3" style="padding-right: 20px"><input name="eventType" type="text"
 								style="width: 100%" /></td>
 					</tr>
@@ -135,7 +134,7 @@
 				</table>
 			</form>
 
-			<table id="condition-search-result-table" style="border:1px solid black">
+			<table class='table-header' id="condition-search-result-table" style="border:1px solid black; display:none; margin-top:10px;">
 
 				<tr>
 					<th>Data ID</th>
@@ -163,7 +162,7 @@
 
 			<div class="d3-graph">
 
-				<div id="force-div" style="width:900px;height:500px; display:block; border:1px solid black">
+				<div id="force-div" style="width:900px;height:500px; display:none; border:1px solid black">
 					<div id="force-container">
 
 					</div>

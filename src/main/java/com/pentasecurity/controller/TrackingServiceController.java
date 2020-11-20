@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class TrackingServiceController {
 	
 	
-	private final TrackingServiceService trackingServiceService;
+	private final TrackingServiceService trackingServiceService; 
 
 	@GetMapping
 	private Map<String, Object> index() {
@@ -41,9 +41,10 @@ public class TrackingServiceController {
 	private Map<String, Object> searchForDataId(@PathVariable String dataId) {
 		Map<String, Object> ret = new HashMap<>();
 		
-		List<History> temp = trackingServiceService.searchForDataid(dataId);
+		//List<History> temp = trackingServiceService.searchForDataid(dataId);
 		//List<History> temp = trackingServiceService.searchAll();
-		ret.put("result", temp);
+		ret = getDataIdInfo(dataId);
+		//ret.put("result", temp);
 
 		return ret;
 
@@ -55,14 +56,14 @@ public class TrackingServiceController {
 		Map<String, Object> ret = new HashMap<>();
 		
 		
-		List<HistoryDto> data = trackingServiceService.conditionalSearch(condition);
-		
-		ret.put("total", data.size());
-		ret.put("result",data);
-		ret.put("tree", trackingServiceService.makeTreeForce(condition));
+		List<History> data = trackingServiceService.conditionalSearch(condition);
+		List<HistoryDto> list = trackingServiceService.wrappingDto(data);
+		ret.put("total", list.size());
+		ret.put("result",list);
+		ret.put("tree", trackingServiceService.makeTreeForce(data, condition.getDeviceId(), condition.getEdgeId()));
 		
 		return ret;
-	}
+	} 
 	
 	@PostMapping("/upload")
 	private Map<String, Object> uploadFile(@RequestParam("file") MultipartFile multipartFile) {
@@ -72,7 +73,7 @@ public class TrackingServiceController {
 			byte[] bytes = multipartFile.getBytes();
 			
 			String contents = new String(bytes);
-			System.out.println(contents);
+			//System.out.println(contents);
 			
 			String dataId = trackingServiceService.encryption(contents);
 			
@@ -137,6 +138,26 @@ public class TrackingServiceController {
 		
 		ret.put("result", trackingServiceService.getDataFormatList());
 		
+		return ret;
+	}
+	
+	private Map<String, Object> getDataIdInfo(String dataId) {
+		Map<String, Object> ret = new HashMap<>();
+		
+		MasterDto masterDto = trackingServiceService.getMasterTable(dataId);
+		ret.put("dataId", dataId);
+		String contents = trackingServiceService.getData(dataId);
+		ret.put("metaData", contents);
+
+		if(masterDto != null) {
+			
+			ret.put("timestamp", masterDto.getCreateTime());
+			ret.put("dataFormat", masterDto.getDataFormat());
+			ret.put("deviceId", masterDto.getSourceId());
+			ret.put("tree", trackingServiceService.getTree(dataId));
+			ret.put("treeForce", trackingServiceService.getTreeForce(dataId));
+			
+		}
 		return ret;
 	}
 

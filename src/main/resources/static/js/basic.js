@@ -4,6 +4,40 @@ var treeData;
 var jsonData;
 var jsonData2;
 
+var isTracking = true;
+
+var test_start;
+var test_end;
+var test_count=0;
+
+function loadDataId() {
+	temp = location.href.split("?");
+	if(temp[1] != undefined) {
+		data=temp[1].split("=");
+	
+		dataId = data[1];
+		loadDataDetail(dataId);
+	}
+}
+
+function loadDataDetail(dataId) { 
+	
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var response = JSON.parse(this.responseText);
+			fileDetail(response);
+			document.getElementById("data-info").style.display="block";
+			
+		}
+	};
+
+	xhttp.open("GET", loadUri + "/search/" + dataId); 
+	xhttp.send();
+}
+
+
+
 function loadDataFormat() { 
 	
 	var xhttp = new XMLHttpRequest();
@@ -40,6 +74,31 @@ function conditionalTracking() {
 	
 }
 
+function tracking() {
+	
+	var treeDiv = document.getElementById("tree-div");
+	var forceDiv = document.getElementById("force-div");
+	var trackingBtn = document.getElementById("tracking-btn");
+	 
+	document.getElementById("data-info").style.display="none";
+	if(isTracking) {
+		treeDiv.style.display="block";
+		forceDiv.style.display="none";
+		trackingBtn.innerHTML="Visualization";
+		isTracking=false;
+		
+	}
+	else {
+		treeDiv.style.display="none";
+		forceDiv.style.display="block";
+		trackingBtn.innerHTML="Tracking";
+		
+		
+		isTracking=true;
+	}
+	
+}
+
 function fileDetail(data) {
 	
 	var dataIdText = document.getElementById("dataIdText");
@@ -58,13 +117,20 @@ function fileDetail(data) {
 	deviceId.innerHTML = data["deviceId"];
 	
 	treeData = JSON.parse(data["tree"]);
-	jsonData = JSON.parse(data["treeForce"]);
+	jsonData2 = JSON.parse(data["treeForce"]);
 	
-	console.log(JSON.parse(data["treeForce"]));
+	//console.log(JSON.parse(data["treeForce"]));
 	viewTree();
 	force();
 	
 	
+}
+
+function upload_test() {
+	test_start = new Date().getTime();
+	for(var i = 0 ;i<1000;i++){
+		upload();
+	}
 }
 
 function upload() {
@@ -76,12 +142,21 @@ function upload() {
 			var response = JSON.parse(this.responseText);
 			fileDetail(response);
 			document.getElementById("data-info").style.display="block";
-			document.getElementById("tree-div").style.display="block";
+			test_count++;
+			console.log(test_count);
+			if(test_count >= 1000){
+				test_end = new Date().getTime();
+				console.log("1000 회 실행시간 : " + test_end - test_start);
+			}
+			//document.getElementById("tree-div").style.display="block";
 		}
 	};
+	
+	
 	 
 	xhttp.open("POST", loadUri + "/upload");
 	fd.append('file', selectedFile);
+	
 	
 	xhttp.send(fd);
 }
@@ -98,6 +173,9 @@ function listReset(element) {
 function searchResult(data) {
 	let length = data["total"];
 	let result = data["result"];
+	
+	
+	
 	
 	var table = document.getElementById("condition-search-result-table");
 	listReset(table);
@@ -124,15 +202,21 @@ function searchResult(data) {
 		cell.align = "center";
 		
 		cell = elementList.insertCell();
-		cell.innerHTML = "<button href='#' type='button'>상세보기</button>";;
+		cell.innerHTML = "<button type='button' onclick=detailDataId('"+result[i].dataId +"')>상세보기</button>";
 		cell.align = "center";
 		
 		cell = elementList.insertCell();
-		cell.innerHTML = "<button href='#' type='button'>다운로드</button>";;
+		cell.innerHTML = "<button href='#' type='button'>다운로드</button>";
 		cell.align = "center";
 		
 	}
 		
+}
+
+function detailDataId(dataid) {
+	
+	var pageURI = '/index.html?dataid=';
+	location.href= pageURI + dataid;
 }
 
 function getFormData($form){
@@ -147,6 +231,13 @@ function getFormData($form){
 }
 
 function conditionalSearch() {
+	
+	
+	var forceDiv = document.getElementById('force-div');
+	var conditionResultTable = document.getElementById('condition-search-result-table');
+	
+	forceDiv.style.display="none";
+	conditionResultTable.style.display="block";
 	
 	
 	var formData = $("#search-form");
