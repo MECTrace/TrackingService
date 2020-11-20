@@ -174,6 +174,7 @@ function searchResult(data) {
 	let length = data["total"];
 	let result = data["result"];
 	
+	tableResult = result;
 	
 	
 	
@@ -198,7 +199,7 @@ function searchResult(data) {
 		cell.align = "center";
 		
 		cell = elementList.insertCell();
-		cell.innerHTML = "RSU-v1.23";
+		cell.innerHTML = result[i].toId;
 		cell.align = "center";
 		
 		cell = elementList.insertCell();
@@ -214,9 +215,15 @@ function searchResult(data) {
 }
 
 function detailDataId(dataid) {
-	
 	var pageURI = '/index.html?dataid=';
-	location.href= pageURI + dataid;
+	if(opener) {
+		opener.location.href= pageURI + dataid;
+	}
+	else {
+		
+		location.href= pageURI + dataid;
+	}
+	
 }
 
 function getFormData($form){
