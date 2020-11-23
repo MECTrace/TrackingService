@@ -124,28 +124,40 @@ function fileDetail(data) {
 	
 }
 
-function upload_test() {
-	for(var i = 0 ;i<1000;i++){
-		upload();
-	}
+function sleep (delay) {
+	   var start = new Date().getTime();
+	   while (new Date().getTime() < start + delay);
 }
 
+
+var count = 0;
+var start_clock;
+var end_clock;
+var avg_clock = 0;
+
 function upload() {
+	
+	start_clock = new Date().getTime();
 	var xhttp = new XMLHttpRequest();
 	const fd = new FormData();
 	const selectedFile = document.getElementById('uploadFile').files[0];
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 			var response = JSON.parse(this.responseText);
+			//sleep(400);
 			fileDetail(response);
 			document.getElementById("data-info").style.display="block";
-			test_count++;
-			console.log(test_count);
-			if(test_count >= 1000){
-				
-				
+			
+			count++;
+			end_clock = new Date().getTime();
+			avg_clock += (end_clock - start_clock);
+			
+			console.log("count : " + count + " upload time : " + (end_clock - start_clock));
+			console.log("count : " + count + " avg  time : " + (avg_clock / count));
+			
+			if(count < 100) {
+				upload();
 			}
-			//document.getElementById("tree-div").style.display="block";
 		}
 	};
 	
@@ -156,6 +168,7 @@ function upload() {
 	
 	
 	xhttp.send(fd);
+	//sleep(400);
 }
 
 function listReset(element) {
