@@ -173,9 +173,14 @@ public class TrackingServiceService {
 		Set<String> set = history.stream()
 				.map(h -> h.getDataId())
 				.collect(toSet());
-
+	
+		if(!condition.getEventType().equals("")) {
+			List<History> traceSet = historyRepository.findByTrace(condition.getEventType());
+			
+			set.retainAll(traceSet.stream().map(h-> h.getDataId()).collect(toSet()));
+	
+		}
 		List<String> dataIdList = new ArrayList<>(set);
-		
 		conditionHistory.addAll(historyRepository.findAllByDataIdIn(dataIdList));
 		
 		end = System.currentTimeMillis();
@@ -329,8 +334,15 @@ public class TrackingServiceService {
 		Set<String> toIdSet;
 		Set<String> fromIdSet;
 		
-		toIdSet = history.stream().map(h -> h.getToId()).collect(toSet());
-		fromIdSet = history.stream().map(h -> h.getFromId()).collect(toSet());
+		toIdSet = history.stream()
+				.filter(h -> !h.getToId().equals(""))
+				.map(h -> h.getToId())
+				.collect(toSet());
+		
+		fromIdSet = history.stream()
+				.filter(h -> !h.getToId().equals(""))
+				.map(h -> h.getFromId())
+				.collect(toSet());
 		
 		nodeName.addAll(toIdSet);
 		nodeName.addAll(fromIdSet);
@@ -346,6 +358,7 @@ public class TrackingServiceService {
 		
 		for(String member: memberList) {
 			JSONObject node = new JSONObject();
+			if(member.equals("")) continue;
 			node.put("deviceid", member);
 			node.put("count", 0);
 			
@@ -392,6 +405,7 @@ public class TrackingServiceService {
 			String toId = h.getToId();
 			String fromId = h.getFromId();
 			
+			if(toId.equals("") || fromId.equals("")) continue;
 			JSONObject link = new JSONObject();
 			
 			link.put("source", nodeInfo.get(fromId).getIndex());
