@@ -2,6 +2,9 @@ package com.pentasecurity.service;
 
 import static java.util.stream.Collectors.toSet;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,8 +17,6 @@ import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import com.pentasecurity.dto.ConditionSearchDto;
@@ -40,6 +41,40 @@ public class TrackingServiceService {
 	private final CodeRepository codeRepository;
 	
 	
+	
+	public List<String> downloadDataId() {
+		List<String> list = new ArrayList<>();
+		
+		List<Master> master = masterRepository.findAll();
+		
+		File folder = new File("./dataid");
+		if(!folder.exists()) {
+			try {
+				folder.mkdir();
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		for (Master m : master) {
+			
+			try {
+				OutputStream output = new FileOutputStream("./dataid/"+m.getDataId());
+				byte[] bytes = m.getData().getBytes();
+				output.write(bytes);
+				output.close();
+				list.add(m.getDataId());
+				
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return list;
+	}
 	
 	public List<History> searchForDataid(String dataId) {
 		//List<String> ret = new ArrayList<>();

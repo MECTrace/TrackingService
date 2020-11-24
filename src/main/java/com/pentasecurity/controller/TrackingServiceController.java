@@ -36,6 +36,21 @@ public class TrackingServiceController {
 		Map<String, Object> ret = new HashMap<>();
 		return ret;
 	}
+	
+	@GetMapping("/download")
+	private Map<String, Object> download() {
+		Map<String, Object> ret = new HashMap<>();
+		
+		int count = 0;
+		List<String> list = trackingServiceService.downloadDataId();
+		
+		count = list.size();
+		ret.put("count", count);
+		ret.put("list", list);
+		
+		
+		return ret;
+	}
 
 	@GetMapping("/search/{dataId}")
 	private Map<String, Object> searchForDataId(@PathVariable String dataId) {
