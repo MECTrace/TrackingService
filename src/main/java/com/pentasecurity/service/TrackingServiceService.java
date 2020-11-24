@@ -86,11 +86,28 @@ public class TrackingServiceService {
 	
 	public String getTree(String dataId) {
 		List<History> ret = historyRepository.findByDataId(dataId);
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		return tree(ret, getMasterTable(dataId));
 	}
 	
 	public String getTreeForce(String dataId) {
 		List<History> ret = historyRepository.findByDataId(dataId);
+		
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		return treeForce(ret,"","" , false);
 	}
 	
@@ -137,6 +154,13 @@ public class TrackingServiceService {
 	}
 	public MasterDto getMasterTable(String dataId) {
 		Master master = masterRepository.findById(dataId).orElse(null);
+		
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		MasterDto masterDto = null;
 		if(master != null) { 

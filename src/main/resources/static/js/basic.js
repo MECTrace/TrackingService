@@ -144,7 +144,7 @@ function upload() {
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 			var response = JSON.parse(this.responseText);
-			//sleep(400);
+			sleep(400);
 			fileDetail(response);
 			document.getElementById("data-info").style.display="block";
 			
@@ -168,7 +168,7 @@ function upload() {
 	
 	
 	xhttp.send(fd);
-	//sleep(400);
+	sleep(400);
 }
 
 function listReset(element) {
@@ -199,7 +199,7 @@ function searchResult(data) {
 	listReset(table);
 
 	let test_start = new Date().getTime();
-	/*
+	
 	for (var curr of result) {
 		var elementList = table.insertRow();
 		var cell = elementList.insertCell(-1);
@@ -231,10 +231,10 @@ function searchResult(data) {
 		cell.align = "center";
 		
 	}
-	*/
 	
 	
 	
+	/*
 	result.forEach((function(curr){ 
 		var elementList = table.insertRow();
 		var cell = elementList.insertCell(-1);
@@ -247,24 +247,25 @@ function searchResult(data) {
 
 		cell = elementList.insertCell(-1);
 		cell.innerHTML = curr.dataFormat;
-		cell.align = "center";
+		//cell.align = "center";
 		
 		cell = elementList.insertCell(-1);
 		cell.innerHTML = curr.fromId;
-		cell.align = "center";
+		//cell.align = "center";
 		
 		cell = elementList.insertCell(-1);
 		cell.innerHTML = curr.toId;
-		cell.align = "center";
+		//cell.align = "center";
 		
 		cell = elementList.insertCell(-1);
 		cell.innerHTML = "<button type='button' onclick=detailDataId('"+curr.dataId +"')>상세보기</button>";
-		cell.align = "center";
+		//cell.align = "center";
 		
 		cell = elementList.insertCell(-1);
 		cell.innerHTML = "<button href='#' type='button'>다운로드</button>";
-		cell.align = "center";}));
-	/*
+		//cell.align = "center";
+		}));
+	
 	for (var i = 0; i < length; i++) {
 		var elementList = table.insertRow();
 		var cell = elementList.insertCell(-1);
