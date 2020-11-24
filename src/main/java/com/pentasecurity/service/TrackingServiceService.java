@@ -2,6 +2,9 @@ package com.pentasecurity.service;
 
 import static java.util.stream.Collectors.toSet;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,8 +17,6 @@ import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import com.pentasecurity.dto.ConditionSearchDto;
@@ -40,6 +41,40 @@ public class TrackingServiceService {
 	private final CodeRepository codeRepository;
 	
 	
+	
+	public List<String> downloadDataId() {
+		List<String> list = new ArrayList<>();
+		
+		List<Master> master = masterRepository.findAll();
+		
+		File folder = new File("./dataid");
+		if(!folder.exists()) {
+			try {
+				folder.mkdir();
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		for (Master m : master) {
+			
+			try {
+				OutputStream output = new FileOutputStream("./dataid/"+m.getDataId());
+				byte[] bytes = m.getData().getBytes();
+				output.write(bytes);
+				output.close();
+				list.add(m.getDataId());
+				
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return list;
+	}
 	
 	public List<History> searchForDataid(String dataId) {
 		//List<String> ret = new ArrayList<>();
@@ -173,9 +208,14 @@ public class TrackingServiceService {
 		Set<String> set = history.stream()
 				.map(h -> h.getDataId())
 				.collect(toSet());
-
+	
+		if(!condition.getEventType().equals("")) {
+			List<History> traceSet = historyRepository.findByTrace(condition.getEventType());
+			
+			set.retainAll(traceSet.stream().map(h-> h.getDataId()).collect(toSet()));
+	
+		}
 		List<String> dataIdList = new ArrayList<>(set);
-		
 		conditionHistory.addAll(historyRepository.findAllByDataIdIn(dataIdList));
 		
 		end = System.currentTimeMillis();
@@ -329,8 +369,15 @@ public class TrackingServiceService {
 		Set<String> toIdSet;
 		Set<String> fromIdSet;
 		
-		toIdSet = history.stream().map(h -> h.getToId()).collect(toSet());
-		fromIdSet = history.stream().map(h -> h.getFromId()).collect(toSet());
+		toIdSet = history.stream()
+				.filter(h -> !h.getToId().equals(""))
+				.map(h -> h.getToId())
+				.collect(toSet());
+		
+		fromIdSet = history.stream()
+				.filter(h -> !h.getToId().equals(""))
+				.map(h -> h.getFromId())
+				.collect(toSet());
 		
 		nodeName.addAll(toIdSet);
 		nodeName.addAll(fromIdSet);
@@ -346,6 +393,7 @@ public class TrackingServiceService {
 		
 		for(String member: memberList) {
 			JSONObject node = new JSONObject();
+			if(member.equals("")) continue;
 			node.put("deviceid", member);
 			node.put("count", 0);
 			
@@ -392,6 +440,7 @@ public class TrackingServiceService {
 			String toId = h.getToId();
 			String fromId = h.getFromId();
 			
+			if(toId.equals("") || fromId.equals("")) continue;
 			JSONObject link = new JSONObject();
 			
 			link.put("source", nodeInfo.get(fromId).getIndex());

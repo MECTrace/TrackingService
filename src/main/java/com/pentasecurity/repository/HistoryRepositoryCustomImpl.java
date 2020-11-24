@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import com.pentasecurity.dto.ConditionSearchDto;
 import com.pentasecurity.entity.History;
+import static java.util.stream.Collectors.toList;
 
 @Repository
 public class HistoryRepositoryCustomImpl implements HistoryRepositoryCustom{
@@ -25,12 +26,13 @@ public class HistoryRepositoryCustomImpl implements HistoryRepositoryCustom{
 
 	@Override
 	public List<History> findByConditional(ConditionSearchDto condition) {
+		
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<History> q = cb.createQuery(History.class);
 		Root<History> history = q.from(History.class);
 		
 		List<Predicate> res = new ArrayList<>();
-	
+
 		
 		if(!StringUtils.isEmpty(condition.getTimeStampStart()) && !StringUtils.isEmpty(condition.getTimeStampEnd())) {
 			res.add(
@@ -38,12 +40,13 @@ public class HistoryRepositoryCustomImpl implements HistoryRepositoryCustom{
 					);
 					
 		}
+		/*
 		if(!StringUtils.isEmpty(condition.getEventType())) {
 			res.add(
 					cb.equal(history.get("trace"), condition.getEventType())
 					
 					);		
-		}
+		}*/
 		if(!StringUtils.isEmpty(condition.getDeviceId())) {
 			res.add(cb.equal(history.get("fromId"), condition.getDeviceId()));
 		}
@@ -53,18 +56,20 @@ public class HistoryRepositoryCustomImpl implements HistoryRepositoryCustom{
 		if(!StringUtils.isEmpty(condition.getDataFormat())) {
 			res.add(cb.equal(history.get("master").get("dataFormat"), condition.getDataFormat()));
 		}
-		
-		
-		
+
 		q.where(
 				cb.and(
 						res.toArray(new Predicate[res.size()])));
 		
-		
-		
 		TypedQuery<History> boardListQuery = entityManager.createQuery(q);
 
-		List<History> historyList = boardListQuery.getResultList();
+
+		System.out.println("Query : " + boardListQuery.unwrap(org.hibernate.Query.class).getQueryString());
+		
+		//TODO: 여기가 오래걸림
+		List<History> historyList = boardListQuery.getResultList();  
+		
+
 		
 	
 		return historyList;

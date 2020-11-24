@@ -6,8 +6,6 @@ var jsonData2;
 
 var isTracking = true;
 
-var test_start;
-var test_end;
 var test_count=0;
 
 function loadDataId() {
@@ -126,29 +124,40 @@ function fileDetail(data) {
 	
 }
 
-function upload_test() {
-	test_start = new Date().getTime();
-	for(var i = 0 ;i<1000;i++){
-		upload();
-	}
+function sleep (delay) {
+	   var start = new Date().getTime();
+	   while (new Date().getTime() < start + delay);
 }
 
+
+var count = 0;
+var start_clock;
+var end_clock;
+var avg_clock = 0;
+
 function upload() {
+	
+	start_clock = new Date().getTime();
 	var xhttp = new XMLHttpRequest();
 	const fd = new FormData();
 	const selectedFile = document.getElementById('uploadFile').files[0];
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 			var response = JSON.parse(this.responseText);
+			//sleep(400);
 			fileDetail(response);
 			document.getElementById("data-info").style.display="block";
-			test_count++;
-			console.log(test_count);
-			if(test_count >= 1000){
-				test_end = new Date().getTime();
-				console.log("1000 회 실행시간 : " + test_end - test_start);
+			
+			count++;
+			end_clock = new Date().getTime();
+			avg_clock += (end_clock - start_clock);
+			
+			console.log("count : " + count + " upload time : " + (end_clock - start_clock));
+			console.log("count : " + count + " avg  time : " + (avg_clock / count));
+			
+			if(count < 100) {
+				upload();
 			}
-			//document.getElementById("tree-div").style.display="block";
 		}
 	};
 	
@@ -159,6 +168,7 @@ function upload() {
 	
 	
 	xhttp.send(fd);
+	//sleep(400);
 }
 
 function listReset(element) {
@@ -171,6 +181,13 @@ function listReset(element) {
 }
 
 function searchResult(data) {
+	
+	var forceDiv = document.getElementById('force-div');
+	var conditionResultTable = document.getElementById('condition-search-result-table');
+	
+	forceDiv.style.display="none";
+	conditionResultTable.style.display="block";
+	
 	let length = data["total"];
 	let result = data["result"];
 	
@@ -180,38 +197,109 @@ function searchResult(data) {
 	
 	var table = document.getElementById("condition-search-result-table");
 	listReset(table);
-	for (var i = 0; i < length; i++) {
-		var elementList = table.insertRow();
-		var cell = elementList.insertCell();
-		
-		cell.innerHTML = result[i].dataId;
 
-		cell = elementList.insertCell();
-		cell.innerHTML = result[i].receivedTime;
+	let test_start = new Date().getTime();
+	/*
+	for (var curr of result) {
+		var elementList = table.insertRow();
+		var cell = elementList.insertCell(-1);
+		
+		cell.innerHTML = curr.dataId;
+
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = curr.receivedTime;
 		//cell.align = "left";
 
-		cell = elementList.insertCell();
-		cell.innerHTML = result[i].dataFormat;
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = curr.dataFormat;
 		cell.align = "center";
 		
-		cell = elementList.insertCell();
-		cell.innerHTML = result[i].fromId;
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = curr.fromId;
 		cell.align = "center";
 		
-		cell = elementList.insertCell();
-		cell.innerHTML = result[i].toId;
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = curr.toId;
 		cell.align = "center";
 		
-		cell = elementList.insertCell();
-		cell.innerHTML = "<button type='button' onclick=detailDataId('"+result[i].dataId +"')>상세보기</button>";
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = "<button type='button' onclick=detailDataId('"+curr.dataId +"')>상세보기</button>";
 		cell.align = "center";
 		
-		cell = elementList.insertCell();
+		cell = elementList.insertCell(-1);
 		cell.innerHTML = "<button href='#' type='button'>다운로드</button>";
 		cell.align = "center";
 		
 	}
+	*/
+	
+	
+	
+	result.forEach((function(curr){ 
+		var elementList = table.insertRow();
+		var cell = elementList.insertCell(-1);
 		
+		cell.innerHTML = curr.dataId;
+
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = curr.receivedTime;
+		//cell.align = "left";
+
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = curr.dataFormat;
+		cell.align = "center";
+		
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = curr.fromId;
+		cell.align = "center";
+		
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = curr.toId;
+		cell.align = "center";
+		
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = "<button type='button' onclick=detailDataId('"+curr.dataId +"')>상세보기</button>";
+		cell.align = "center";
+		
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = "<button href='#' type='button'>다운로드</button>";
+		cell.align = "center";}));
+	/*
+	for (var i = 0; i < length; i++) {
+		var elementList = table.insertRow();
+		var cell = elementList.insertCell(-1);
+		
+		cell.innerHTML = result[i].dataId;
+
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = result[i].receivedTime;
+		//cell.align = "left";
+
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = result[i].dataFormat;
+		cell.align = "center";
+		
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = result[i].fromId;
+		cell.align = "center";
+		
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = result[i].toId;
+		cell.align = "center";
+		
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = "<button type='button' onclick=detailDataId('"+result[i].dataId +"')>상세보기</button>";
+		cell.align = "center";
+		
+		cell = elementList.insertCell(-1);
+		cell.innerHTML = "<button href='#' type='button'>다운로드</button>";
+		cell.align = "center";
+		
+	}
+	*/
+		
+	let test_end = new Date().getTime();
+	console.log("실행시간 : " + (test_end - test_start));
 }
 
 function detailDataId(dataid) {
@@ -239,13 +327,13 @@ function getFormData($form){
 
 function conditionalSearch() {
 	
-	
+	/*
 	var forceDiv = document.getElementById('force-div');
 	var conditionResultTable = document.getElementById('condition-search-result-table');
 	
 	forceDiv.style.display="none";
 	conditionResultTable.style.display="block";
-	
+	*/
 	
 	var formData = $("#search-form");
 	$.ajax({
