@@ -32,7 +32,13 @@ function force() {
     var width = $("#force-div").width();
     var height = $("#force-div").height();
     
+    var d3force = document.getElementById("d3-force");
+	
+	if(d3force != undefined)
+		d3force.remove();
+    
     var svg = d3.select("#force-container").append("svg")
+    	.attr("id","d3-force")
         .attr("class", "overlay")
         .attr("width", width)
         .attr("height", height);

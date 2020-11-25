@@ -118,7 +118,11 @@ function fileDetail(data) {
 	jsonData2 = JSON.parse(data["treeForce"]);
 	
 	//console.log(JSON.parse(data["treeForce"]));
+	
+	
 	viewTree();
+	
+	
 	force();
 	
 	
@@ -144,10 +148,9 @@ function upload() {
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 			var response = JSON.parse(this.responseText);
-			sleep(400);
 			fileDetail(response);
 			document.getElementById("data-info").style.display="block";
-			
+			/*
 			count++;
 			end_clock = new Date().getTime();
 			avg_clock += (end_clock - start_clock);
@@ -158,6 +161,7 @@ function upload() {
 			if(count < 100) {
 				upload();
 			}
+			*/
 		}
 	};
 	
@@ -168,7 +172,7 @@ function upload() {
 	
 	
 	xhttp.send(fd);
-	sleep(400);
+	
 }
 
 function listReset(element) {
