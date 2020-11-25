@@ -53,6 +53,12 @@ function viewTree() {
     var viewerWidth = $("#tree-div").width();
     var viewerHeight = $("#tree-div").height();
     
+    var d3Tree = document.getElementById("d3-tree");
+	
+	if(d3Tree != undefined)
+		d3Tree.remove();
+	
+    
     //var viewerWidth = $(document).width();
     //var viewerHeight = $(document).height();
 
@@ -183,6 +189,7 @@ function viewTree() {
 
     // define the baseSvg, attaching a class for styling and the zoomListener
     var baseSvg = d3.select("#tree-container").append("svg")
+    	.attr("id", "d3-tree")
         .attr("width", viewerWidth)
         .attr("height", viewerHeight)
         .attr("class", "overlay")

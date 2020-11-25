@@ -2,6 +2,7 @@ HELP.md
 .gradle
 build/
 dataid/
+dataid.zip
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -23,6 +24,7 @@ bin/
 *.iws
 *.iml
 *.ipr
+
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
