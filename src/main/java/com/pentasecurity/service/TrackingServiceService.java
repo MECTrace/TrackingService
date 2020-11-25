@@ -156,7 +156,7 @@ public class TrackingServiceService {
 		Master master = masterRepository.findById(dataId).orElse(null);
 		
 		try {
-			Thread.sleep(300);
+			Thread.sleep(250);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
