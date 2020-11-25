@@ -61,8 +61,14 @@ function force() {
     };
     
     var isCondition = function(d) {
-    	 if (d.isCondition == true) 
-             return d.count;
+    	 if (d.isCondition == true) {
+    		 
+    		 if(d.receive == 0)
+    			 return d.trans;
+    		 else 
+    			 return d.receive;
+    	 }
+             
          else return ""; 
     };
 

@@ -1,6 +1,7 @@
 package com.pentasecurity.service;
 
 import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -217,6 +218,9 @@ public class TrackingServiceService {
 	private List<History> conditionalSearchHistory(ConditionSearchDto condition){
 		
 		
+		condition.setTimeStampStart("2020-11-24 11:00:00");
+		condition.setTimeStampEnd("2020-11-24 13:00:00");
+		
 		long start = System.currentTimeMillis();
 		
 		List<History> history = historyRepository.findByConditional(condition);
@@ -227,20 +231,26 @@ public class TrackingServiceService {
 		
 		start = System.currentTimeMillis();
 		
-		List<History> conditionHistory = new ArrayList<>();
-		
-		Set<String> set = history.stream()
-				.map(h -> h.getDataId())
-				.collect(toSet());
-	
+		List<History> conditionHistory;
 		if(!condition.getEventType().equals("")) {
-			List<History> traceSet = historyRepository.findByTrace(condition.getEventType());
+
+			conditionHistory = history.stream()
+					.filter(h -> h.getTrace().equals(condition.getEventType()))
+					.collect(toList());
 			
-			set.retainAll(traceSet.stream().map(h-> h.getDataId()).collect(toSet()));
-	
 		}
-		List<String> dataIdList = new ArrayList<>(set);
-		conditionHistory.addAll(historyRepository.findAllByDataIdIn(dataIdList));
+		else {
+			
+			conditionHistory = new ArrayList<>();
+			
+			Set<String> set = history.stream()
+					.map(h -> h.getDataId())
+					.collect(toSet());
+		
+			List<String> dataIdList = new ArrayList<>(set);
+			conditionHistory.addAll(historyRepository.findAllByDataIdIn(dataIdList));
+		
+		}
 		
 		end = System.currentTimeMillis();
 		System.out.println("conditionHistory.addAll(searchForDataid(s)) : " + (end - start));
@@ -413,20 +423,23 @@ public class TrackingServiceService {
 		
 		int index = 0;
 		
+		boolean hasDevice = false;
+		
 		
 		
 		for(String member: memberList) {
 			JSONObject node = new JSONObject();
 			if(member.equals("")) continue;
+			if(member.contains("device"))
+				hasDevice = true;
 			node.put("deviceid", member);
-			node.put("count", 0);
+			node.put("trans", 0);
+			node.put("receive", 0);
 			
 			if(member.equals(edge))
 				node.put("color","#ed7c31");  // 주황
 			else if(member.equals(device))
 				node.put("color","#fbc280"); // 연주황
-			else if(member.equals("central cloud"))
-				node.put("color","#405275");  // 검파랑
 			else 
 				node.put("color","#d9d9d9"); // 회색
 			
@@ -447,18 +460,22 @@ public class TrackingServiceService {
 		}
 		
 		
-		
 		int cloudIndex = index;
-		
 		JSONObject cloud = new JSONObject();
-		cloud.put("deviceid", "central cloud");
-		cloud.put("color","#405275");
-		cloud.put("count", 0);
-		cloud.put("isCondition", isCondition);
-		nodeInfo.put("central cloud", new NodeGraphInfo(cloudIndex, cloud));
 		
-		nodeArray.add(cloud);
-		
+		if(hasDevice) {
+			
+			
+			
+			cloud.put("deviceid", "central cloud");
+			cloud.put("color","#405275");
+			cloud.put("trans", 0);
+			cloud.put("receive", 0);
+			cloud.put("isCondition", isCondition);
+			nodeInfo.put("central cloud", new NodeGraphInfo(cloudIndex, cloud));
+			
+			nodeArray.add(cloud);
+		}
 		
 		for(History h: history) {
 			String toId = h.getToId();
@@ -473,7 +490,6 @@ public class TrackingServiceService {
 			if(h.getFromType().contains("device")) {
 				JSONObject cloudLink = new JSONObject();
 				
-				
 				cloudLink.put("source", nodeInfo.get(toId).getIndex());
 				cloudLink.put("target", cloudIndex);
 				cloudLink.put("color", "#ed7c31");
@@ -484,15 +500,17 @@ public class TrackingServiceService {
 			JSONObject from = nodeInfo.get(fromId).getNodeInfo();
 			JSONObject to = nodeInfo.get(toId).getNodeInfo();
 			
-			int toCount = (int)to.get("count");
+			int receiveCount = (int)to.get("receive");
+			int transCount = (int)from.get("trans");
 			 
 			from.put("devicetype", h.getFromType());
+			from.put("trans", transCount + 1);
 			
 			to.put("devicetype", h.getToType());
 			to.put("actiontype", h.getTrace());
 			to.put("timestamp", h.getReceivedTime());
 			to.put("actiontype", h.getTrace());
-			to.put("count", toCount + 1);
+			to.put("receive", receiveCount + 1);
 			
 			
 			
@@ -503,15 +521,17 @@ public class TrackingServiceService {
 			}
 			else link.put("color", "#d9d9d9");
 			
+			
 			if(fromId.equals(device) || (isDeviceIdEmpty && h.getFromType().contains("device"))) {
-				int deviceCount = (int)from.get("count");
-				int cloudCount = (int)cloud.get("count");
+				//int deviceCount = (int)from.get("count");
+				int cloudCount = (int)cloud.get("receive");
 				
-				from.put("count", deviceCount + 1);
+				//from.put("count", deviceCount + 1);
 				
-				cloud.put("count", cloudCount + 1);
+				cloud.put("receive", cloudCount + 1);
 				link.put("color", "#ed7c31");
 			}
+			
 			
 			
 			//linkArray.add(link);
