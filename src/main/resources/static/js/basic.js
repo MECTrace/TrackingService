@@ -202,7 +202,7 @@ function searchResult(data) {
 	var table = document.getElementById("condition-search-result-table");
 	listReset(table);
 
-	let test_start = new Date().getTime();
+	
 	
 	for (var curr of result) {
 		var elementList = table.insertRow();
@@ -303,8 +303,7 @@ function searchResult(data) {
 	}
 	*/
 		
-	let test_end = new Date().getTime();
-	console.log("실행시간 : " + (test_end - test_start));
+	
 }
 
 function detailDataId(dataid) {
@@ -330,6 +329,9 @@ function getFormData($form){
     return indexed_array;
 }
 
+var test_start;
+
+
 function conditionalSearch() {
 	
 	/*
@@ -340,6 +342,7 @@ function conditionalSearch() {
 	conditionResultTable.style.display="block";
 	*/
 	
+	test_start = new Date().getTime();
 	var formData = $("#search-form");
 	$.ajax({
 		url: loadUri + "/condition/search",
@@ -348,8 +351,16 @@ function conditionalSearch() {
 		data:JSON.stringify(getFormData(formData)),
 		success:function(data){
 			//console.log(data);
+			let test_end = new Date().getTime();
+			
+			console.log("success 시간 : " + (test_end - test_start));
+			
+			test_start = test_end;
 			searchResult(data);
 			jsonData2 = JSON.parse(data["tree"]);
+			
+			test_end = new Date().getTime();
+			console.log("실행시간 : " + (test_end - test_start));
 		},
 		error: function(xhr, status, error) {
 			console.log(error);

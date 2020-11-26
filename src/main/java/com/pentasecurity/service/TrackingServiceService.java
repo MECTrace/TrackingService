@@ -1,6 +1,7 @@
 package com.pentasecurity.service;
 
 import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toList;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -77,10 +78,7 @@ public class TrackingServiceService {
 	}
 	
 	public List<History> searchForDataid(String dataId) {
-		//List<String> ret = new ArrayList<>();
 		List<History> ret = historyRepository.findByDataId(dataId);
-		//tree(ret, getMasterTable(dataId));
-		
 		return ret;
 	}
 	
@@ -89,7 +87,6 @@ public class TrackingServiceService {
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -103,7 +100,6 @@ public class TrackingServiceService {
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -112,7 +108,6 @@ public class TrackingServiceService {
 	}
 	
 	public List<History> searchAll() {
-		//List<String> ret = new ArrayList<>();
 		List<History> ret = historyRepository.findAll();
 		
 		return ret;
@@ -122,8 +117,6 @@ public class TrackingServiceService {
 		String ret = "";
 		
 		ret = encrypt(content, "SHA-256");
-		
-		//System.out.println(ret);
 		
 		return ret;
 	}
@@ -158,7 +151,6 @@ public class TrackingServiceService {
 		try {
 			Thread.sleep(250);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -188,7 +180,6 @@ public class TrackingServiceService {
 		
 		long start = System.currentTimeMillis();
 		List<History> conditionHistory = conditionalSearchHistory(condition);
-		//treeForce(history);
 		
 		long end = System.currentTimeMillis();
 		
@@ -217,6 +208,9 @@ public class TrackingServiceService {
 	private List<History> conditionalSearchHistory(ConditionSearchDto condition){
 		
 		
+		condition.setTimeStampStart("2020-11-24 11:00:00");
+		condition.setTimeStampEnd("2020-11-24 13:00:00");
+		
 		long start = System.currentTimeMillis();
 		
 		List<History> history = historyRepository.findByConditional(condition);
@@ -227,20 +221,26 @@ public class TrackingServiceService {
 		
 		start = System.currentTimeMillis();
 		
-		List<History> conditionHistory = new ArrayList<>();
-		
-		Set<String> set = history.stream()
-				.map(h -> h.getDataId())
-				.collect(toSet());
-	
+		List<History> conditionHistory;
 		if(!condition.getEventType().equals("")) {
-			List<History> traceSet = historyRepository.findByTrace(condition.getEventType());
+
+			conditionHistory = history.stream()
+					.filter(h -> h.getTrace().equals(condition.getEventType()))
+					.collect(toList());
 			
-			set.retainAll(traceSet.stream().map(h-> h.getDataId()).collect(toSet()));
-	
 		}
-		List<String> dataIdList = new ArrayList<>(set);
-		conditionHistory.addAll(historyRepository.findAllByDataIdIn(dataIdList));
+		else {
+			
+			conditionHistory = new ArrayList<>();
+			
+			Set<String> set = history.stream()
+					.map(h -> h.getDataId())
+					.collect(toSet());
+		
+			List<String> dataIdList = new ArrayList<>(set);
+			conditionHistory.addAll(historyRepository.findAllByDataIdIn(dataIdList));
+		
+		}
 		
 		end = System.currentTimeMillis();
 		System.out.println("conditionHistory.addAll(searchForDataid(s)) : " + (end - start));
@@ -278,7 +278,6 @@ public class TrackingServiceService {
 			if(member.getTrace().equals("new")){
 				queue.add(member);
 				firstNode = member;
-				//break;
 			}
 			nodeName.add(member.getFromId());
 			nodeName.add(member.getToId());
@@ -303,8 +302,6 @@ public class TrackingServiceService {
 		
 		firstObj.put("timestamp", masterDto.getCreateTime());
 		firstObj.put("actiontype", "create");
-		//firstObj.put("devicetype", "device");
-		//firstObj.put("devicetype", );
 		for(History path: history) {
 			String startName = path.getFromId();
 			String endName = path.getToId();
@@ -324,56 +321,11 @@ public class TrackingServiceService {
 			nodeObject.put("children", nodeArray);
 		}
 
-		//System.out.println(treeNode.get(firstNode.getFromId()).toString());
-		//System.out.println(treeNode.get(firstNode.getFromId()).toJSONString());
 		ret = treeNode.get(firstNode.getFromId()).toJSONString();
 		
 		return ret;
 	}
 
-	
-	/*
-	@SuppressWarnings("unchecked")
-	
-	private String treeForce(List<History> history, MasterDto masterDto) { 
-		
-		String ret ="";
-				
-		JSONObject cloud = new JSONObject();
-		
-		String treeOrigin = tree(history, masterDto);
-		JSONParser parser = new JSONParser();
-		JSONObject tree = null;
-		try {
-			tree = (JSONObject)parser.parse(treeOrigin);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if(tree == null) {
-			ret = "error";
-		}
-		else {
-			
-			JSONArray child = (JSONArray)tree.get("children");
-			JSONArray child2 = (JSONArray)(((JSONObject)child.get(0)).get("children"));
-			
-			child2.add(cloud);
-			//TODO: devicetype, timestamp 채울것
-			cloud.put("devicetype", "Central Cloud");
-			cloud.put("timestamp", (String)((JSONObject)child.get(0)).get("timestamp"));
-			cloud.put("actiontype", "cloud");
-			cloud.put("devicetype", "Central Cloud");
-			cloud.put("deviceid", "Central Cloud");
-			
-			ret= tree.toJSONString();
-		}
-		
-		
-		return ret;
-	}
-	
-	*/
 	@SuppressWarnings("unchecked")
 	private String treeForce(List<History> history, String device, String edge, boolean isCondition) {
 		String ret ="";
@@ -413,20 +365,23 @@ public class TrackingServiceService {
 		
 		int index = 0;
 		
+		boolean hasDevice = false;
+		
 		
 		
 		for(String member: memberList) {
 			JSONObject node = new JSONObject();
 			if(member.equals("")) continue;
+			if(member.contains("device"))
+				hasDevice = true;
 			node.put("deviceid", member);
-			node.put("count", 0);
+			node.put("trans", 0);
+			node.put("receive", 0);
 			
 			if(member.equals(edge))
 				node.put("color","#ed7c31");  // 주황
 			else if(member.equals(device))
 				node.put("color","#fbc280"); // 연주황
-			else if(member.equals("central cloud"))
-				node.put("color","#405275");  // 검파랑
 			else 
 				node.put("color","#d9d9d9"); // 회색
 			
@@ -447,18 +402,22 @@ public class TrackingServiceService {
 		}
 		
 		
-		
 		int cloudIndex = index;
-		
 		JSONObject cloud = new JSONObject();
-		cloud.put("deviceid", "central cloud");
-		cloud.put("color","#405275");
-		cloud.put("count", 0);
-		cloud.put("isCondition", isCondition);
-		nodeInfo.put("central cloud", new NodeGraphInfo(cloudIndex, cloud));
 		
-		nodeArray.add(cloud);
-		
+		if(hasDevice) {
+			
+			
+			
+			cloud.put("deviceid", "central cloud");
+			cloud.put("color","#405275");
+			cloud.put("trans", 0);
+			cloud.put("receive", 0);
+			cloud.put("isCondition", isCondition);
+			nodeInfo.put("central cloud", new NodeGraphInfo(cloudIndex, cloud));
+			
+			nodeArray.add(cloud);
+		}
 		
 		for(History h: history) {
 			String toId = h.getToId();
@@ -473,7 +432,6 @@ public class TrackingServiceService {
 			if(h.getFromType().contains("device")) {
 				JSONObject cloudLink = new JSONObject();
 				
-				
 				cloudLink.put("source", nodeInfo.get(toId).getIndex());
 				cloudLink.put("target", cloudIndex);
 				cloudLink.put("color", "#ed7c31");
@@ -484,42 +442,36 @@ public class TrackingServiceService {
 			JSONObject from = nodeInfo.get(fromId).getNodeInfo();
 			JSONObject to = nodeInfo.get(toId).getNodeInfo();
 			
-			int toCount = (int)to.get("count");
+			int receiveCount = (int)to.get("receive");
+			int transCount = (int)from.get("trans");
 			 
 			from.put("devicetype", h.getFromType());
+			from.put("trans", transCount + 1);
 			
 			to.put("devicetype", h.getToType());
 			to.put("actiontype", h.getTrace());
 			to.put("timestamp", h.getReceivedTime());
 			to.put("actiontype", h.getTrace());
-			to.put("count", toCount + 1);
+			to.put("receive", receiveCount + 1);
 			
 			
 			
 			if(fromId.equals(edge)) {
 				to.put("color", "#0070C0"); // 파랑
-				//link.put("color", "#ed7c31");
 				link.put("color", "#0070C0");  // 파랑
 			}
 			else link.put("color", "#d9d9d9");
 			
+			
 			if(fromId.equals(device) || (isDeviceIdEmpty && h.getFromType().contains("device"))) {
-				int deviceCount = (int)from.get("count");
-				int cloudCount = (int)cloud.get("count");
+				int cloudCount = (int)cloud.get("receive");
 				
-				from.put("count", deviceCount + 1);
-				
-				cloud.put("count", cloudCount + 1);
+				cloud.put("receive", cloudCount + 1);
 				link.put("color", "#ed7c31");
 			}
-			
-			
-			//linkArray.add(link);
 			linkSet.add(link);
-			//linkArray.
+			
 		}
-		
-		
 		
 		for(JSONObject link: linkSet) {
 			linkArray.add(link);
@@ -531,8 +483,6 @@ public class TrackingServiceService {
 		result.put("links", linkArray);
 		
 		ret = result.toJSONString();
-		
-		//System.out.println(ret);
 		
 		
 		return ret;
