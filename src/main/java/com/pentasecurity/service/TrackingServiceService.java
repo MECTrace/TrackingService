@@ -167,11 +167,21 @@ public class TrackingServiceService {
 	}
 	
 	public List<HistoryDto> wrappingDto(List<History> list){
-		List<HistoryDto> historyDto = new ArrayList<>();
+		List<HistoryDto> historyDto = null;// = new ArrayList<>();
 		
+		long start = System.currentTimeMillis();
+		
+		historyDto = list.stream().map(h -> new HistoryDto()).collect(toList());
+		//historyDto = historyDto.stream().map(h -> new HistoryDto()).collect(toList());
+		
+		
+		int index =0;
 		for(History h : list) {
-			historyDto.add(new HistoryDto(h));
+			historyDto.get(index++).setAll(h);
 		}
+		
+		long end = System.currentTimeMillis();
+		System.out.println("wrappingDto : " + (end - start));
 		
 		return historyDto;	
 	}
