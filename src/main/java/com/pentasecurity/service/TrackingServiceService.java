@@ -135,7 +135,7 @@ public class TrackingServiceService {
 		List<HistoryDto> ret = new ArrayList<>();
 		
 		for(History h : toNode) {
-			ret.add(new HistoryDto(h));
+			ret.add(new HistoryDto(h, ""));
 		}
 		return ret;
 	}
@@ -170,18 +170,27 @@ public class TrackingServiceService {
 	}
 	
 	public List<HistoryDto> wrappingDto(List<History> list){
-		List<HistoryDto> historyDto = null;// = new ArrayList<>();
-		
 		long start = System.currentTimeMillis();
+		List<HistoryDto> historyDto = null;// = new ArrayList<>();
+		List<String> dataidSet = list.stream().map(h -> h.getDataId()).collect(toList());
+		List<Master> masters = masterRepository.findAllByDataIdIn(dataidSet);
 		
-		historyDto = list.stream().map(h -> new HistoryDto()).collect(toList());
+		Map<String, String> maps = new HashMap<>();
+		
+		for(Master m : masters) {
+			maps.put(m.getDataId(), m.getDataFormat());
+		}
+		
+		
+		
+		
+		
+		
+		historyDto = list.stream().map(h -> new HistoryDto(h, maps.get(h.getDataId()))).collect(toList());
 		//historyDto = historyDto.stream().map(h -> new HistoryDto()).collect(toList());
 		
 		
-		int index =0;
-		for(History h : list) {
-			historyDto.get(index++).setAll(h);
-		}
+
 		
 		long end = System.currentTimeMillis();
 		System.out.println("wrappingDto : " + (end - start));

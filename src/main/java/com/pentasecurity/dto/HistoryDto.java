@@ -40,7 +40,7 @@ public class HistoryDto {
 		
 	}
 	
-	public HistoryDto(History h) {
+	public HistoryDto(History h, String format) {
 		
 		this.dataId = h.getDataId();
 		this.fromId = h.getFromId();
@@ -50,12 +50,12 @@ public class HistoryDto {
 		this.trace = h.getTrace();
 		this.receivedTime = h.getReceivedTime();
 		
-		if(h.getMaster() != null)
-			this.dataFormat = h.getMaster().getDataFormat();
+		
+		this.dataFormat = format;
 		
 	}
 	
-	public void setAll(History h) {
+	public void setAll(History h, String format) {
 		
 		this.dataId = h.getDataId();
 		this.fromId = h.getFromId();
@@ -65,8 +65,7 @@ public class HistoryDto {
 		this.trace = h.getTrace();
 		this.receivedTime = h.getReceivedTime();
 		
-		if(h.getMaster() != null)
-			this.dataFormat = h.getMaster().getDataFormat();
+		this.dataFormat = format;
 		
 	}
 }
