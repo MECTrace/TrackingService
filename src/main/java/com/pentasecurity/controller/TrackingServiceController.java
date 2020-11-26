@@ -56,17 +56,13 @@ public class TrackingServiceController {
 	private Map<String, Object> searchForDataId(@PathVariable String dataId) {
 		Map<String, Object> ret = new HashMap<>();
 		
-		//List<History> temp = trackingServiceService.searchForDataid(dataId);
-		//List<History> temp = trackingServiceService.searchAll();
 		ret = getDataIdInfo(dataId);
-		//ret.put("result", temp);
 
 		return ret;
 
 	}
 	
 	@PostMapping("/condition/search")
-	//private Map<String, Object> conditionalSearch(@ModelAttribute ConditionSearchDto condition){
 	private Map<String, Object> conditionalSearch(@RequestBody ConditionSearchDto condition){
 		Map<String, Object> ret = new HashMap<>();
 		
@@ -88,7 +84,6 @@ public class TrackingServiceController {
 			byte[] bytes = multipartFile.getBytes();
 			
 			String contents = new String(bytes);
-			//System.out.println(contents);
 			
 			String dataId = trackingServiceService.encryption(contents);
 			
@@ -96,10 +91,7 @@ public class TrackingServiceController {
 			ret.put("dataId", dataId);
 			ret.put("metaData", contents);
 			
-			
-			
 			if(masterDto != null) {
-				
 				ret.put("timestamp", masterDto.getCreateTime());
 				ret.put("dataFormat", masterDto.getDataFormat());
 				ret.put("deviceId", masterDto.getSourceId());
@@ -108,7 +100,6 @@ public class TrackingServiceController {
 				
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
