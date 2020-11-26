@@ -45,12 +45,18 @@ function loadDataFormat() {
 			var selectbox = document.getElementById("dataformat-selectbox");
 			var dataFormat = response["result"];
 			
+			var option = document.createElement("option");
+			option.text = "해당없음";
+			option.value = "";
+			selectbox.options.add(option);
+			
 			for (var i = 0; i < dataFormat.length; i++) {
 				var option = document.createElement("option");
 				option.text = dataFormat[i]["codeName"];
 				option.value = dataFormat[i]["codeName"];
 				selectbox.options.add(option);
 			}
+			
 		}
 	};
 

@@ -1,13 +1,16 @@
 package com.pentasecurity.service;
 
-import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -132,7 +135,7 @@ public class TrackingServiceService {
 		List<HistoryDto> ret = new ArrayList<>();
 		
 		for(History h : toNode) {
-			ret.add(new HistoryDto(h));
+			ret.add(new HistoryDto(h, ""));
 		}
 		return ret;
 	}
@@ -167,11 +170,30 @@ public class TrackingServiceService {
 	}
 	
 	public List<HistoryDto> wrappingDto(List<History> list){
-		List<HistoryDto> historyDto = new ArrayList<>();
+		long start = System.currentTimeMillis();
+		List<HistoryDto> historyDto = null;// = new ArrayList<>();
+		List<String> dataidSet = list.stream().map(h -> h.getDataId()).collect(toList());
+		List<Master> masters = masterRepository.findAllByDataIdIn(dataidSet);
 		
-		for(History h : list) {
-			historyDto.add(new HistoryDto(h));
+		Map<String, String> maps = new HashMap<>();
+		
+		for(Master m : masters) {
+			maps.put(m.getDataId(), m.getDataFormat());
 		}
+		
+		
+		
+		
+		
+		
+		historyDto = list.stream().map(h -> new HistoryDto(h, maps.get(h.getDataId()))).collect(toList());
+		//historyDto = historyDto.stream().map(h -> new HistoryDto()).collect(toList());
+		
+		
+
+		
+		long end = System.currentTimeMillis();
+		System.out.println("wrappingDto : " + (end - start));
 		
 		return historyDto;	
 	}
@@ -206,11 +228,12 @@ public class TrackingServiceService {
 	}
 	
 	private List<History> conditionalSearchHistory(ConditionSearchDto condition){
+		if(condition.getTimeStampStart().equals(""))
+			condition.setTimeStampStart("2020-11-24 11:00:00");
+		if(condition.getTimeStampEnd().equals(""))
+			condition.setTimeStampEnd("2020-11-24 13:00:00");
 		
-		
-		condition.setTimeStampStart("2020-11-24 11:00:00");
-		condition.setTimeStampEnd("2020-11-24 13:00:00");
-		
+		SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		long start = System.currentTimeMillis();
 		
 		List<History> history = historyRepository.findByConditional(condition);
@@ -241,6 +264,24 @@ public class TrackingServiceService {
 			conditionHistory.addAll(historyRepository.findAllByDataIdIn(dataIdList));
 		
 		}
+		conditionHistory = conditionHistory.stream().filter(h -> { 
+			Date receiveDate;
+			Date conditionDateStart;
+			Date conditionDateEnd;
+			try {
+				receiveDate = transFormat.parse(h.getReceivedTime());
+				conditionDateStart = transFormat.parse(condition.getTimeStampStart());
+				conditionDateEnd = transFormat.parse(condition.getTimeStampEnd());
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+				return false;
+			}
+			
+			if(conditionDateStart.compareTo(receiveDate) <= 0 && conditionDateEnd.compareTo(receiveDate)>=0) return true;
+			else return false;
+			
+}).collect(toList());
 		
 		end = System.currentTimeMillis();
 		System.out.println("conditionHistory.addAll(searchForDataid(s)) : " + (end - start));

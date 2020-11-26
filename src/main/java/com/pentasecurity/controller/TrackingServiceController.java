@@ -56,7 +56,11 @@ public class TrackingServiceController {
 	private Map<String, Object> searchForDataId(@PathVariable String dataId) {
 		Map<String, Object> ret = new HashMap<>();
 		
+		System.out.println("[START] searchForDataId");
+		
 		ret = getDataIdInfo(dataId);
+		
+		System.out.println("[  END] searchForDataId");
 
 		return ret;
 
@@ -66,6 +70,7 @@ public class TrackingServiceController {
 	private Map<String, Object> conditionalSearch(@RequestBody ConditionSearchDto condition){
 		Map<String, Object> ret = new HashMap<>();
 		
+		System.out.println("[START] conditionalSearch");
 		
 		List<History> data = trackingServiceService.conditionalSearch(condition);
 		List<HistoryDto> list = trackingServiceService.wrappingDto(data);
@@ -73,13 +78,15 @@ public class TrackingServiceController {
 		ret.put("result",list);
 		ret.put("tree", trackingServiceService.makeTreeForce(data, condition.getDeviceId(), condition.getEdgeId()));
 		
+		System.out.println("[  END] conditionalSearch");
+		
 		return ret;
 	} 
 	
 	@PostMapping("/upload")
 	private Map<String, Object> uploadFile(@RequestParam("file") MultipartFile multipartFile) {
 		Map<String, Object> ret = new HashMap<>();
-		
+		System.out.println("[START] uploadFile");
 		try {
 			byte[] bytes = multipartFile.getBytes();
 			
@@ -103,6 +110,7 @@ public class TrackingServiceController {
 			e.printStackTrace();
 		}
 		
+		System.out.println("[  END] uploadFile");
 		return ret;
 	}
 	
@@ -110,6 +118,9 @@ public class TrackingServiceController {
 	private Map<String, Object> getNodeTrace(
 			@RequestParam(name="nodeName", defaultValue="device-2") String nodeName,
 			@RequestParam(name="dataId", defaultValue="1ccd607a3d8ba9fe30bedffbd7df294e40599abaee707440dcd3e0f3845f05b3") String dataId) {
+		
+		System.out.println("[START] getNodeTrace");
+		
 		Map<String, Object> ret = new HashMap<>();
 		List<HistoryDto> historyDto = trackingServiceService.getNodeTrace(nodeName, dataId);
 		Map<String, Object> tmp = new HashMap<>();
@@ -132,7 +143,7 @@ public class TrackingServiceController {
 			ret.put("treeForce", trackingServiceService.getTreeForce(dataId));
 			
 		}
-		
+		System.out.println("[  END] getNodeTrace");
 		
 		return ret;
 	}
@@ -140,14 +151,20 @@ public class TrackingServiceController {
 	
 	@GetMapping("/dataformat") 
 	private Map<String, Object> getDataFormatList() {
+		
+		System.out.println("[START] getDataFormatList");
 		Map<String, Object> ret = new HashMap<>();
 		
 		ret.put("result", trackingServiceService.getDataFormatList());
+		
+		System.out.println("[  END] getDataFormatList");
 		
 		return ret;
 	}
 	
 	private Map<String, Object> getDataIdInfo(String dataId) {
+		System.out.println("[START] getDataIdInfo");
+		
 		Map<String, Object> ret = new HashMap<>();
 		
 		MasterDto masterDto = trackingServiceService.getMasterTable(dataId);
@@ -164,6 +181,8 @@ public class TrackingServiceController {
 			ret.put("treeForce", trackingServiceService.getTreeForce(dataId));
 			
 		}
+		
+		System.out.println("[  END] getDataIdInfo");
 		return ret;
 	}
 

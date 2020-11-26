@@ -18,6 +18,14 @@ public class HistoryDto {
 	private String dataFormat;
 	
 	public HistoryDto() {
+		this.dataId = "";
+		this.fromType = "";
+		this.fromId = "";
+		this.toType = "";
+		this.toId = "";
+		this.trace = "";
+		this.receivedTime = "";
+		this.dataFormat = "";
 		
 	}
 	public HistoryDto(String dataId, String fromType, String fromId, String toType, String toId, String trace, String receivedTime, String dataFormat) {
@@ -32,7 +40,7 @@ public class HistoryDto {
 		
 	}
 	
-	public HistoryDto(History h) {
+	public HistoryDto(History h, String format) {
 		
 		this.dataId = h.getDataId();
 		this.fromId = h.getFromId();
@@ -42,8 +50,22 @@ public class HistoryDto {
 		this.trace = h.getTrace();
 		this.receivedTime = h.getReceivedTime();
 		
-		if(h.getMaster() != null)
-			this.dataFormat = h.getMaster().getDataFormat();
+		
+		this.dataFormat = format;
+		
+	}
+	
+	public void setAll(History h, String format) {
+		
+		this.dataId = h.getDataId();
+		this.fromId = h.getFromId();
+		this.fromType = h.getFromType();
+		this.toType = h.getToType();
+		this.toId = h.getToId();
+		this.trace = h.getTrace();
+		this.receivedTime = h.getReceivedTime();
+		
+		this.dataFormat = format;
 		
 	}
 }
