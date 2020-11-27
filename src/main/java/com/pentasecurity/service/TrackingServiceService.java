@@ -281,7 +281,7 @@ public class TrackingServiceService {
 			if(conditionDateStart.compareTo(receiveDate) <= 0 && conditionDateEnd.compareTo(receiveDate)>=0) return true;
 			else return false;
 			
-}).collect(toList());
+			}).collect(toList());
 		
 		end = System.currentTimeMillis();
 		System.out.println("conditionHistory.addAll(searchForDataid(s)) : " + (end - start));
@@ -303,11 +303,12 @@ public class TrackingServiceService {
         }
     }
 	
+	
+	
 	@SuppressWarnings("unchecked")
 	private String tree(List<History> history, MasterDto masterDto) {
 		String ret ="";
 		
-		Queue<History> queue = new LinkedList<>();
 		
 		Map<String, JSONObject> treeNode = new HashMap<>();
 		Map<String, JSONArray> treeArray = new HashMap<>();
@@ -315,9 +316,9 @@ public class TrackingServiceService {
 		Set<String> nodeName = new HashSet<>();
 		History firstNode = null;
 		
+		//device_id를 추출, 중복제거용		
 		for(History member : history) {
 			if(member.getTrace().equals("new")){
-				queue.add(member);
 				firstNode = member;
 			}
 			nodeName.add(member.getFromId());
@@ -326,23 +327,24 @@ public class TrackingServiceService {
 		
 		List<String> memberList = new ArrayList<>(nodeName);
 		
-		
+		//device_id를 key로하는 각 jsonobject, jsonarray를 담는 map 구성 
 		for(String member: memberList) {
 			JSONObject node = new JSONObject();
 			JSONArray child = new JSONArray();
 			
 			node.put("deviceid", member);
 			
-			
 			treeNode.put(member, node);
 			treeArray.put(member, child);
-			
 		}
 		
 		JSONObject firstObj = treeNode.get(firstNode.getFromId());
 		
 		firstObj.put("timestamp", masterDto.getCreateTime());
 		firstObj.put("actiontype", "create");
+		
+		// 반복하여 각각 차일드 노드를 갖게 만듦
+		// 이 코드로 인해 O(n)으로 해결 가능
 		for(History path: history) {
 			String startName = path.getFromId();
 			String endName = path.getToId();
