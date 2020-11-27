@@ -25,19 +25,19 @@
 
 			var table = document.getElementById("condition-search-result-table-detail");
 			listReset(table);
-			for (var i = 0; i < length; i++) {
-				if (data[i].fromId == selectedNode || data[i].toId == selectedNode) {
+				for (var curr of data) {
+				if (curr.fromId == selectedNode || curr.toId == selectedNode) {
 					var elementList = table.insertRow();
 					var cell = elementList.insertCell();
 
-					cell.innerHTML = data[i].dataId;
+					cell.innerHTML = curr.dataId;
 
 					cell = elementList.insertCell();
-					cell.innerHTML = data[i].receivedTime;
+					cell.innerHTML = curr.receivedTime;
 					//cell.align = "left";
 
 					cell = elementList.insertCell();
-					cell.innerHTML = data[i].dataFormat;
+					cell.innerHTML = curr.dataFormat;
 					cell.align = "center";
 					
 					cell = elementList.insertCell();
@@ -57,15 +57,15 @@
 					cell.align = "center";
 					
 					cell = elementList.insertCell();
-					cell.innerHTML = data[i].fromId;
+					cell.innerHTML = curr.fromId;
 					cell.align = "center";
 
 					cell = elementList.insertCell();
-					cell.innerHTML = data[i].toId;
+					cell.innerHTML = curr.toId;
 					cell.align = "center";
 
 					cell = elementList.insertCell();
-					cell.innerHTML = "<button type='button' onclick=detailDataId('" + data[i].dataId + "')>상세보기</button>";
+					cell.innerHTML = "<button type='button' onclick=detailDataId('" + curr.dataId + "')>상세보기</button>";
 					cell.align = "center";
 
 					cell = elementList.insertCell();
