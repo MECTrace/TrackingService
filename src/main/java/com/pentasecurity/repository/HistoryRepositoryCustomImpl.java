@@ -54,13 +54,13 @@ public class HistoryRepositoryCustomImpl implements HistoryRepositoryCustom{
 				cb.and(
 						res.toArray(new Predicate[res.size()])));
 		
-		TypedQuery<History> boardListQuery = entityManager.createQuery(q);
+		TypedQuery<History> historyListQuery = entityManager.createQuery(q);
 
 
 		//System.out.println("Query : " + boardListQuery.unwrap(org.hibernate.Query.class).getQueryString());
 		
 		//TODO: 여기가 오래걸림
-		List<History> historyList = boardListQuery.getResultList();  
+		List<History> historyList = historyListQuery.getResultList();  
 		
 
 		

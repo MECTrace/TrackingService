@@ -16,7 +16,7 @@
 			let length = data["total"];
 			let result = data["detail"];
 
-			for (var i = 0; i < length; i++) {
+			for (var curr of result) {
 				var elementList = table.insertRow();
 				var cell = elementList.insertCell();
 
@@ -24,23 +24,23 @@
 				cell.align = "center";
 
 				cell = elementList.insertCell();
-				cell.innerHTML = result[i].fromType;
+				cell.innerHTML = curr.fromType;
 				cell.align = "center";
 
 				cell = elementList.insertCell();
-				cell.innerHTML = result[i].fromId;
+				cell.innerHTML = curr.fromId;
 				cell.align = "center";
 
 				cell = elementList.insertCell();
-				cell.innerHTML = result[i].toType;
+				cell.innerHTML = curr.toType;
 				cell.align = "center";
 
 				cell = elementList.insertCell();
-				cell.innerHTML = result[i].toId;
+				cell.innerHTML = curr.toId;
 				cell.align = "center";
 
 				cell = elementList.insertCell();
-				cell.innerHTML = result[i].receivedTime;
+				cell.innerHTML = curr.receivedTime;
 				cell.align = "center";
 
 			}

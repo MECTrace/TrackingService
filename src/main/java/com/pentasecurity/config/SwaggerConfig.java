@@ -30,7 +30,7 @@ public class SwaggerConfig {
 	@Bean
 	public Docket api() {
 		version ="V1";
-		title = "TrackingService Api " + version;
+		title = "Tracking Service Api " + version;
 		
 		List<ResponseMessage> responseMessages = new ArrayList<>();
 		
