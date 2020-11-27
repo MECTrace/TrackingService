@@ -369,6 +369,9 @@ public class TrackingServiceService {
 		return ret;
 	}
 
+	
+	// graph형태를 띄는 구성 생성
+	// json을 nodes 와 links로 구성해야함
 	@SuppressWarnings("unchecked")
 	private String treeForce(List<History> history, String device, String edge, boolean isCondition) {
 		String ret ="";
@@ -388,6 +391,8 @@ public class TrackingServiceService {
 		Set<String> toIdSet;
 		Set<String> fromIdSet;
 		
+		// 각 device_id를 수집하는 코드 
+		// 중복을 제거하기위해 set을 사용
 		toIdSet = history.stream()
 				.filter(h -> !h.getToId().equals(""))
 				.map(h -> h.getToId())
@@ -411,7 +416,7 @@ public class TrackingServiceService {
 		boolean hasDevice = false;
 		
 		
-		
+		// 각 device_id에 따른 node를 구성
 		for(String member: memberList) {
 			JSONObject node = new JSONObject();
 			if(member.equals("")) continue;
@@ -448,9 +453,9 @@ public class TrackingServiceService {
 		int cloudIndex = index;
 		JSONObject cloud = new JSONObject();
 		
+		
+		// device가 있을땐 central cloud가 필요함.
 		if(hasDevice) {
-			
-			
 			
 			cloud.put("deviceid", "central cloud");
 			cloud.put("color","#405275");
@@ -462,6 +467,10 @@ public class TrackingServiceService {
 			nodeArray.add(cloud);
 		}
 		
+		// 각 노드가 연결된 정보를 생성
+		// receive 와 trans를 구별해 받는쪽과 보내는쪽에 각각 카운트를 함.
+		// 보낸정보는 있지만 받은정보가 없을경우에는 d3에서 보낸정보로 출력함(보낼수 있었다는건 받았다는걸 가정)
+		// 수정이 필요할 수 도 있음.
 		for(History h: history) {
 			String toId = h.getToId();
 			String fromId = h.getFromId();
@@ -496,8 +505,6 @@ public class TrackingServiceService {
 			to.put("timestamp", h.getReceivedTime());
 			to.put("actiontype", h.getTrace());
 			to.put("receive", receiveCount + 1);
-			
-			
 			
 			if(fromId.equals(edge)) {
 				to.put("color", "#0070C0"); // 파랑
