@@ -1,10 +1,16 @@
 package com.pentasecurity.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.common.net.HttpHeaders;
 import com.pentasecurity.dto.ConditionSearchDto;
 import com.pentasecurity.dto.HistoryDto;
 import com.pentasecurity.dto.MasterDto;
@@ -36,20 +43,30 @@ public class TrackingServiceController {
 		Map<String, Object> ret = new HashMap<>();
 		return ret;
 	}
+
 	
 	@GetMapping("/download")
-	private Map<String, Object> download() {
-		Map<String, Object> ret = new HashMap<>();
+	private ResponseEntity<InputStreamResource> download() {
+	
+		InputStreamResource resource = null;
 		
-		int count = 0;
-		List<String> list = trackingServiceService.downloadDataId();
-		
-		count = list.size();
-		ret.put("count", count);
-		ret.put("list", list);
-		
-		
-		return ret;
+		File tmpFile = trackingServiceService.downloadDataId();
+		try {
+			resource = new InputStreamResource(new FileInputStream(tmpFile));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		if (resource != null) {
+
+			String filename = tmpFile.getName();
+
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
+
+		}
+		return null;
 	}
 
 	@GetMapping("/search/{dataId}")

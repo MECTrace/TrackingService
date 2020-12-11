@@ -4,7 +4,9 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.ParseException;
@@ -13,11 +15,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -46,12 +48,14 @@ public class TrackingServiceService {
 	
 	
 	
-	public List<String> downloadDataId() {
-		List<String> list = new ArrayList<>();
+	public File downloadDataId() {
+		//List<String> list = new ArrayList<>();
 		
 		List<Master> master = masterRepository.findAll();
 		
-		File folder = new File("./dataid");
+		String tmpdir = getTempFolder();
+		String dataIdDir = tmpdir + "/dataid";
+		File folder = new File(dataIdDir);
 		if(!folder.exists()) {
 			try {
 				folder.mkdir();
@@ -60,24 +64,42 @@ public class TrackingServiceService {
 				e.printStackTrace();
 			}
 		}
-		
+		String zip = tmpdir + "/" +"dataId.zip";
+		ZipOutputStream zipOut = null;
+		try {
+			zipOut = new ZipOutputStream(new FileOutputStream(zip));
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		for (Master m : master) {
-			
 			try {
-				OutputStream output = new FileOutputStream("./dataid/"+m.getDataId());
+				
+				OutputStream output = new FileOutputStream(dataIdDir + "/" + m.getDataId());
 				byte[] bytes = m.getData().getBytes();
 				output.write(bytes);
 				output.close();
-				list.add(m.getDataId());
+				if(zipOut != null) {
+					ZipEntry entry = new ZipEntry(m.getDataId());
+					zipOut.putNextEntry(entry);
+					zipOut.write(bytes);
+				}
 				
 			}
 			catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
-		
-		return list;
+		if(zipOut != null) {
+			try {
+				zipOut.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return new File(zip);
 	}
 	
 	public List<History> searchForDataid(String dataId) {
@@ -181,17 +203,9 @@ public class TrackingServiceService {
 			maps.put(m.getDataId(), m.getDataFormat());
 		}
 		
-		
-		
-		
-		
-		
 		historyDto = list.stream().map(h -> new HistoryDto(h, maps.get(h.getDataId()))).collect(toList());
 		//historyDto = historyDto.stream().map(h -> new HistoryDto()).collect(toList());
-		
-		
-
-		
+			
 		long end = System.currentTimeMillis();
 		System.out.println("wrappingDto : " + (end - start));
 		
@@ -227,12 +241,25 @@ public class TrackingServiceService {
 		return ret;
 	}
 	
+	private String getTempFolder() {
+		String ret ="";
+		String tmpdirProperty = "java.io.tmpdir";
+		
+		ret = System.getProperty(tmpdirProperty);
+		
+		return ret;
+	}
+	
+	
+	
+	
 	private List<History> conditionalSearchHistory(ConditionSearchDto condition){
-		if(condition.getTimeStampStart().equals(""))
+		
+		/*if(condition.getTimeStampStart().equals(""))
 			condition.setTimeStampStart("2020-11-24 11:00:00");
 		if(condition.getTimeStampEnd().equals(""))
 			condition.setTimeStampEnd("2020-11-24 13:00:00");
-		
+		*/
 		SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		long start = System.currentTimeMillis();
 		
@@ -264,6 +291,8 @@ public class TrackingServiceService {
 			conditionHistory.addAll(historyRepository.findAllByDataIdIn(dataIdList));
 		
 		}
+		
+		if( !condition.getTimeStampStart().equals("") ) {
 		conditionHistory = conditionHistory.stream().filter(h -> { 
 			Date receiveDate;
 			Date conditionDateStart;
@@ -282,6 +311,7 @@ public class TrackingServiceService {
 			else return false;
 			
 			}).collect(toList());
+		}
 		
 		end = System.currentTimeMillis();
 		System.out.println("conditionHistory.addAll(searchForDataid(s)) : " + (end - start));

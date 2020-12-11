@@ -3,6 +3,7 @@ HELP.md
 build/
 dataid/
 dataid.zip
+tmp/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
