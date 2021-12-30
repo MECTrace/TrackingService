@@ -10,3 +10,8 @@ ini_set("date.timezone", "Asia/Seoul");
 
 define ('DS', DIRECTORY_SEPARATOR);
 define ('ROOT_PATH', __DIR__ . DS);
+
+define ('CLASS_PATH', ROOT_PATH . "classes" . DS);
+define ('SYSTEM_CLASS_PATH', ROOT_PATH . "classes" . DS . "system" . DS);
+
+define ('MODULE_PATH', ROOT_PATH . "module" . DS);
