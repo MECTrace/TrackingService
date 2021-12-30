@@ -19,3 +19,6 @@ define ('MODULE_PATH', ROOT_PATH . "module" . DS);
 use classes\system\framework\dkFrameWork;
 
 include SYSTEM_CLASS_PATH . "framework" . DS . "dkFunction.php";
+
+error_reporting(E_ALL);
+ini_set("display_errors", 0); 
