@@ -22,3 +22,18 @@ include SYSTEM_CLASS_PATH . "framework" . DS . "dkFunction.php";
 
 error_reporting(E_ALL);
 ini_set("display_errors", 0); 
+
+set_error_handler("dkErrorHandler");
+register_shutdown_function("dkErrorCapture");
+
+try
+{
+	if(is_file(CLASS_PATH . "user" . DS . "userFunction.php")){
+		include CLASS_PATH . "user" . DS . "userFunction.php";
+	}else{
+		throw new Exception('
+			사용자 정의 함수가 없는데 괜찮아요? 
+			~/classes/user/userFunction.php를 확인하세요.
+		');	
+	}
+}
