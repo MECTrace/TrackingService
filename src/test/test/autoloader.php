@@ -15,3 +15,5 @@ define ('CLASS_PATH', ROOT_PATH . "classes" . DS);
 define ('SYSTEM_CLASS_PATH', ROOT_PATH . "classes" . DS . "system" . DS);
 
 define ('MODULE_PATH', ROOT_PATH . "module" . DS);
+
+use classes\system\framework\dkFrameWork;
