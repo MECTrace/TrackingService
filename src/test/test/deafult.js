@@ -11,5 +11,11 @@ $(document).ready(function(){
         "columnDefs": [
 			//{"targets": [7], "orderable": false}	
 		],
+
+        "initComplete": function () {
+            this.api().columns().every( function () {
+                
+            } );
+        },
     });
 });
