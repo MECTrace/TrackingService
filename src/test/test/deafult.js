@@ -52,4 +52,7 @@ $(document).ready(function(){
             $.show_modal(pk);
         }
     });
+
+    $.extend({
+    }
 });
