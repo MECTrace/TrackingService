@@ -43,5 +43,13 @@ $(document).ready(function(){
         if ( $(this).hasClass('active') ) { 
             $(this).removeClass('active');
         }
+
+        else {
+            table.$('tr.active').removeClass('active');
+            $(this).addClass('active');
+
+            var pk = $(this).find("td[pk]").attr("pk");
+            $.show_modal(pk);
+        }
     });
 });
