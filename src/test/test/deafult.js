@@ -26,5 +26,14 @@ $(document).ready(function(){
     });
     
     $('#serverside-datatable1 tbody')
-    //add to do 
+    .on( 'mouseenter', 'td', function () {
+        try{
+            var colIdx = table.cell(this).index().column;
+
+            $( table.cells().nodes() ).removeClass( 'active' );
+            $( table.column( colIdx ).nodes() ).addClass( 'active' );
+        }catch(e){
+        
+        }
+    } );
 });
