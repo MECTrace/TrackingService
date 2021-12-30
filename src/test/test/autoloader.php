@@ -32,8 +32,7 @@ try
 		include CLASS_PATH . "user" . DS . "userFunction.php";
 	}else{
 		throw new Exception('
-			사용자 정의 함수가 없는데 괜찮아요? 
-			~/classes/user/userFunction.php를 확인하세요.
+			
 		');	
 	}
 }
