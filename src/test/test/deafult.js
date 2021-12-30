@@ -14,7 +14,7 @@ $(document).ready(function(){
 
         "initComplete": function () {
             this.api().columns().every( function () {
-                
+                var column = this;
             } );
         },
     });
