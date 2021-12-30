@@ -59,6 +59,17 @@ $(document).ready(function(){
             dataType: "html",
             data: {idx: pk},
             type: "POST",
+
+            success: function(content)
+            {
+                $("#default-modal .modal-content").html(content);
+                $("#default-modal").modal();
+                //$.getScript("/assets/js/revocation/misbehaviorReport_detail.js");
+            },
+            error: function(res)
+            {
+                console.log(res);
+            }
         )};
 
     });
