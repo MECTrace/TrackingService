@@ -36,4 +36,8 @@ $(document).ready(function(){
         
         }
     } );
+
+    $('#serverside-datatable1 tbody').on( 'click', 'tr', function () {
+        
+    });
 });
