@@ -56,7 +56,9 @@ $(document).ready(function(){
     $.extend({
 
         $.ajax({
-
+            dataType: "html",
+            data: {idx: pk},
+            type: "POST",
         )};
 
     });
