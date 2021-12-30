@@ -37,3 +37,6 @@ try
 		');	
 	}
 }
+catch(Exception $e) { dkException($e); }
+
+$fw = new dkFrameWork;
