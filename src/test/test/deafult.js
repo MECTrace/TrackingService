@@ -54,12 +54,14 @@ $(document).ready(function(){
     });
 
     $.extend({
+    "show_modal": function(pk){
 
+		//console.log(pk);	
         $.ajax({
+            url: "/log/list/detail",
             dataType: "html",
             data: {idx: pk},
             type: "POST",
-
             success: function(content)
             {
                 $("#default-modal .modal-content").html(content);
@@ -70,7 +72,8 @@ $(document).ready(function(){
             {
                 console.log(res);
             }
-        )};
+        });
+	}
+});
 
-    });
 });
